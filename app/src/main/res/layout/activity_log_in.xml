@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".LogInActivity"
+    android:id="@+id/signin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#205072">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/login_wrapper"
+        android:orientation="vertical"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="18dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="HELLO!"
+            android:textColor="@color/white"
+            android:textSize="44sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Welcome to Omsetku"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/login_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="530dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical"
+        android:background="@drawable/bg_login">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_margin="32dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="32sp"
+                android:text="LOGIN"
+                android:layout_marginBottom="20dp"
+                android:textColor="#329D9C"
+                android:textStyle="bold" />
+            <EditText
+                android:id="@+id/input_email"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                style="@style/input_form" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp"/>
+            <EditText
+                android:id="@+id/input_pw"
+                android:hint="Password"
+                android:inputType="textPassword"
+                style="@style/input_form"/>
+
+            <TextView
+                tools:ignore="TouchTargetSizeCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="Forget Password?"
+                android:textAlignment="textEnd"
+                android:textColor="@color/click_color2_effect" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="32dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_login"
+                android:text="Login"
+                style="@style/btn_form"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_margin="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="Don't have account?"
+                android:textColor="@color/color1"/>
+            <TextView
+                android:id="@+id/signup_text"
+                tools:ignore="TouchTargetSizeCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/click_color2_effect"
+                android:focusable="true"
+                android:clickable="true"
+                android:text="Sign Up"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

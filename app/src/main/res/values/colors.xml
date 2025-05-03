@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color1">#205072</color>
+    <color name="color2">#329D9C</color>
+    <color name="color3">#56C596</color>
+    <color name="color4">#7BE495</color>
+    <color name="color5">#CFF4D2</color>
+
+    <!-- Omsetku Theme Colors -->
+    <color name="primary">#205072</color>            <!-- Primary color -->
+    <color name="primary_variant">#173F57</color>    <!-- Darker primary variant -->
+    <color name="secondary">#329D9C</color>          <!-- Secondary/accent color -->
+    <color name="secondary_variant">#277A79</color>  <!-- Darker accent variant -->
+
+    <!-- Additional colors -->
+    <color name="tertiary">#56C596</color>
+    <color name="quaternary">#7BE495</color>
+    <color name="quinary">#CFF4D2</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- Text colors -->
+    <color name="text_primary_light">#212121</color>
+    <color name="text_secondary_light">#757575</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B3FFFFFF</color> <!-- 70% white -->
+
+    <!-- Background colors -->
+    <color name="background_light">#FFFFFF</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="background_dark">#121212</color>     <!-- Standard dark theme background -->
+    <color name="surface_dark">#1E1E1E</color>
+
+    <!-- Status & Navigation bar colors -->
+    <color name="status_bar_light">#173F57</color>    <!-- Darker primary -->
+    <color name="status_bar_dark">#000000</color>
+
+    <!-- Other UI elements -->
+    <color name="error">#B00020</color>               <!-- Error color -->
+    <color name="error_dark">#CF6679</color>          <!-- Error color for dark theme -->
+</resources>
