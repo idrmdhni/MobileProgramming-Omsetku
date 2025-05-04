@@ -1,35 +1,54 @@
 package com.k5.omsetku
 
-import android.content.Intent
-import android.content.pm.SigningInfo
+import android.annotation.SuppressLint
+import androidx.fragment.app.Fragment
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.k5.omsetku.fragment.CategoryFragment
+import com.k5.omsetku.fragment.HomeFragment
+import com.k5.omsetku.fragment.ProductFragment
+import com.k5.omsetku.fragment.SalesFragment
+import androidx.core.graphics.toColorInt
 
 class MainActivity : AppCompatActivity() {
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.welcome)) { v, insets ->
+
+        window.statusBarColor = "#205072".toColorInt()
+        window.navigationBarColor = "#205072".toColorInt()
+        window.decorView.systemUiVisibility = 0
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        val signUpBtn: MaterialButton = findViewById(R.id.btn_to_signup)
-        val signInBtn: MaterialButton = findViewById(R.id.btn_to_login)
-        signUpBtn.setOnClickListener {
-            val intent = Intent(this, SignUpActivity::class.java)
-            startActivity(intent)
+        loadFragment(HomeFragment())
+
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNav.setOnItemSelectedListener {
+            item -> when (item.itemId) {
+                R.id.nav_home -> loadFragment(HomeFragment())
+                R.id.nav_category -> loadFragment(CategoryFragment())
+                R.id.nav_product -> loadFragment(ProductFragment())
+                R.id.nav_sales -> loadFragment(SalesFragment())
+            }
+            true
         }
-        signInBtn.setOnClickListener {
-            val intent = Intent(this, LogInActivity::class.java)
-            startActivity(intent)
-        }
+    }
+
+    @SuppressLint("CommitTransaction")
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.host_fragment, fragment)
+            .commit()
     }
 }

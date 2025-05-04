@@ -88,7 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="32dp"/>
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_login"
+                android:id="@+id/btn_signup"
                 android:text="Login"
                 style="@style/btn_form"/>
         </LinearLayout>
