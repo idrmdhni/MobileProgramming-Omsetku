@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled"
-        android:background="@drawable/nav_bar_bg"
+        android:background="@drawable/rounded1_top_color1"
         app:itemIconTint="@color/selected_white_to_color1"
         app:itemTextColor="@color/selected_white_to_color1"/>
 

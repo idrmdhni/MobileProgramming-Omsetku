@@ -14,7 +14,7 @@
         android:layout_height="600dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"
-        android:background="@drawable/bg_login">
+        android:background="@drawable/rounded1_top_white">
         <LinearLayout
             android:id="@+id/back_to_login"
             android:layout_width="wrap_content"
