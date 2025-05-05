@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.AccountFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color1">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp">
+            <ImageView
+                android:id="@+id/back_to_home"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/rounded_arrow_back_24"
+                app:tint="@color/click_white_effect"
+                android:clickable="true"
+                android:focusable="true"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Profile"
+                android:textColor="@color/click_white_effect"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edit_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="490dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/rounded2_top_white"
+            android:orientation="vertical"
+            android:paddingTop="80dp"
+            android:paddingHorizontal="16dp">
+
+            <EditText
+                android:id="@+id/input_edit_name"
+                style="@style/input_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:inputType="textPassword"
+                android:layout_marginBottom="12dp"/>
+            <EditText
+                android:id="@+id/input_edit_email"
+                style="@style/input_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textPassword"
+                android:layout_marginBottom="12dp"/>
+            <EditText
+                android:id="@+id/input_edit_password"
+                style="@style/input_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:layout_marginBottom="12dp"/>
+            <EditText
+                android:id="@+id/input_edit_password2"
+                style="@style/input_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Confirm Password"
+                android:inputType="textPassword"
+                android:layout_marginBottom="24dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_save_edit"
+                android:text="Save"
+                style="@style/btn_form"/>
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:src="@drawable/tio_pp"
+            app:layout_constraintBottom_toTopOf="@id/edit_wrapper"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="-45dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
