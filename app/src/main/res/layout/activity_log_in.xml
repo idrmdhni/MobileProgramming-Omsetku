@@ -36,7 +36,7 @@
         android:layout_height="530dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"
-        android:background="@drawable/rounded1_top_white">
+        android:background="@drawable/white_rounded1_top">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -74,7 +74,7 @@
                 android:clickable="true"
                 android:text="Forget Password?"
                 android:textAlignment="textEnd"
-                android:textColor="@color/click_color2_effect" />
+                android:textColor="@color/pressed_color2_to_secondaryvariant_effect" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="32dp"/>
@@ -103,7 +103,7 @@
                 android:layout_marginStart="8dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/click_color2_effect"
+                android:textColor="@color/pressed_color2_to_secondaryvariant_effect"
                 android:focusable="true"
                 android:clickable="true"
                 android:text="Sign Up"/>

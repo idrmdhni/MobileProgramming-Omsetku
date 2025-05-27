@@ -5,7 +5,7 @@
         <item name="android:layout_height">52dp</item>
         <item name="android:textSize">16sp</item>
         <item name="android:padding">16dp</item>
-        <item name="android:background">@drawable/rounded1_white</item>
+        <item name="android:background">@drawable/white_stroke_rounded1</item>
         <item name="android:textColor">@color/color2</item>
         <item name="android:textColorHint">@color/color2</item>
     </style>
@@ -22,10 +22,17 @@
         <item name="android:layout_height">60dp</item>
         <item name="cornerRadius">26dp</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/click_color2_to_white_effect</item>
-        <item name="android:backgroundTint">@color/click_transparent_to_color2_effect</item>
+        <item name="android:textColor">@color/pressed_color2_to_white_effect</item>
+        <item name="android:backgroundTint">@color/pressed_transparent_to_color2_effect</item>
         <item name="strokeColor">@color/color2</item>
         <item name="strokeWidth">1.5dp</item>
         <item name="rippleColor">@color/ripple_effect_default</item>
+    </style>
+    <style name="btn_action_popup" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:backgroundTint">@color/color2</item>
     </style>
 </resources>

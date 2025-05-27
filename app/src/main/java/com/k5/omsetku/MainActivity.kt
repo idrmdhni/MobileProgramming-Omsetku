@@ -3,6 +3,7 @@ package com.k5.omsetku
 import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import android.os.Bundle
+import android.widget.FrameLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,8 +14,11 @@ import com.k5.omsetku.fragment.HomeFragment
 import com.k5.omsetku.fragment.ProductFragment
 import com.k5.omsetku.fragment.SalesFragment
 import androidx.core.graphics.toColorInt
+import com.k5.omsetku.fragment.loadfragment.LoadFragment
 
 class MainActivity : AppCompatActivity() {
+    private val fragHost: Int = R.id.host_fragment
+
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,28 +31,31 @@ class MainActivity : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(v.paddingLeft, systemBars.top, v.paddingRight, v.paddingBottom)
             insets
         }
 
-        loadFragment(HomeFragment())
+        LoadFragment.loadMainFragment(supportFragmentManager, fragHost, HomeFragment() )
 
         val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
         bottomNav.setOnItemSelectedListener {
             item -> when (item.itemId) {
-                R.id.nav_home -> loadFragment(HomeFragment())
-                R.id.nav_category -> loadFragment(CategoryFragment())
-                R.id.nav_product -> loadFragment(ProductFragment())
-                R.id.nav_sales -> loadFragment(SalesFragment())
+                R.id.nav_home -> {
+                    LoadFragment.loadMainFragment(supportFragmentManager, fragHost, HomeFragment()
+                    )
+                }
+                R.id.nav_category -> {
+                    LoadFragment.loadMainFragment(supportFragmentManager, fragHost, CategoryFragment()
+                    )
+                }
+                R.id.nav_product -> {
+                    LoadFragment.loadMainFragment(supportFragmentManager, fragHost, ProductFragment())
+                }
+                R.id.nav_sales -> {
+                    LoadFragment.loadMainFragment(supportFragmentManager, fragHost, SalesFragment())
+                }
             }
             true
         }
-    }
-
-    @SuppressLint("CommitTransaction")
-    private fun loadFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.host_fragment, fragment)
-            .commit()
     }
 }

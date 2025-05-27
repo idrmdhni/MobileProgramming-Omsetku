@@ -1,11 +1,21 @@
 package com.k5.omsetku.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
 import com.k5.omsetku.R
+import com.k5.omsetku.features.category.Category
+import com.k5.omsetku.features.category.CategoryAdapter
+import com.k5.omsetku.features.product.ProductAdapter
+import com.k5.omsetku.fragment.loadfragment.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -17,7 +27,11 @@ private const val ARG_PARAM2 = "param2"
  * Use the [CategoryFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CategoryFragment : Fragment() {
+class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
+    private lateinit var recyclerViewCategory: RecyclerView
+    private lateinit var categoryAdapter: CategoryAdapter
+    private lateinit var categoryList: ArrayList<Category>
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -36,6 +50,43 @@ class CategoryFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_category, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        recyclerViewCategory = view.findViewById(R.id.rv_category)
+
+        categoryList = ArrayList()
+        categoryList.add(Category("Accessories"))
+        categoryList.add(Category("Laptop"))
+        categoryList.add(Category("Smartphone"))
+        categoryList.add(Category("Monitor"))
+        categoryList.add(Category("Sparepart"))
+
+        categoryAdapter = CategoryAdapter(categoryList, this)
+        recyclerViewCategory.adapter = categoryAdapter
+
+        val btnAddCategory: FloatingActionButton = view.findViewById(R.id.btn_add_category)
+
+        btnAddCategory.setOnClickListener {
+            LoadFragment.loadChildFragment(
+                parentFragmentManager,
+                R.id.host_fragment,
+                AddCategoryFragment()
+            )
+        }
+
+    }
+
+    override fun onItemEditClicked(category: Category) {
+        val editCategoryFragment = EditCategoryFragment.newInstance(category.name)
+
+        LoadFragment.loadChildFragment(
+            parentFragmentManager,
+            R.id.host_fragment,
+            editCategoryFragment
+        )
     }
 
     companion object {

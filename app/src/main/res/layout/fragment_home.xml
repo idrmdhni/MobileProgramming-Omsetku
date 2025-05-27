@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.HomeFragment">
+    tools:context=".fragment.HomeFragment"
+    android:background="@color/background_light_secondary">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -20,12 +21,12 @@
                 android:layout_height="225dp"
                 app:layout_constraintTop_toTopOf="parent"
                 android:orientation="vertical"
-                android:background="@drawable/rounded1_bottom_color1">
+                android:background="@drawable/color1rounded1_bottom">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginHorizontal="16dp">
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -57,10 +58,11 @@
                             android:id="@+id/account"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
                             android:clickable="true"
                             android:focusable="true"
                             android:src="@drawable/account_circle"
-                            app:tint="@color/click_white_to_secondary"
+                            app:tint="@color/pressed_white_to_textsecondarydark"
                             tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
                     </LinearLayout>
 
@@ -95,7 +97,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Sumarry"
-                        android:textSize="28sp"
+                        android:textSize="24sp"
                         android:textStyle="bold"
                         android:textColor="@color/color1"/>
 
@@ -123,7 +125,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="Total Items"
                                     android:textAlignment="center"
-                                    android:background="@drawable/rounded1_color1"
+                                    android:background="@drawable/color1rounded1"
                                     android:textColor="@color/white"
                                     android:padding="6dp"
                                     android:translationZ="1dp"/>
@@ -132,7 +134,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:gravity="center"
-                                    android:background="@drawable/rounded1_gray1"
+                                    android:background="@drawable/backgroundlighttertiary_rounded1"
                                     android:padding="14dp"
                                     android:layout_marginTop="-14dp">
                                     <TextView
@@ -158,7 +160,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="Today's Sale"
                                     android:textAlignment="center"
-                                    android:background="@drawable/rounded1_color1"
+                                    android:background="@drawable/color2_rounded1"
                                     android:textColor="@color/white"
                                     android:padding="6dp"
                                     android:translationZ="1dp"/>
@@ -167,7 +169,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:gravity="center"
-                                    android:background="@drawable/rounded1_gray1"
+                                    android:background="@drawable/backgroundlighttertiary_rounded1"
                                     android:padding="14dp"
                                     android:layout_marginTop="-14dp">
                                     <TextView
@@ -199,7 +201,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="This Week's Sale"
                                     android:textAlignment="center"
-                                    android:background="@drawable/rounded1_color1"
+                                    android:background="@drawable/color3_rounded1"
                                     android:textColor="@color/white"
                                     android:padding="6dp"
                                     android:translationZ="1dp"/>
@@ -208,7 +210,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:gravity="center"
-                                    android:background="@drawable/rounded1_gray1"
+                                    android:background="@drawable/backgroundlighttertiary_rounded1"
                                     android:padding="14dp"
                                     android:layout_marginTop="-14dp">
                                     <TextView
@@ -234,7 +236,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="This Month's Sale"
                                     android:textAlignment="center"
-                                    android:background="@drawable/rounded1_color1"
+                                    android:background="@drawable/color4_rounded1"
                                     android:textColor="@color/white"
                                     android:padding="6dp"
                                     android:translationZ="1dp"/>
@@ -243,7 +245,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:gravity="center"
-                                    android:background="@drawable/rounded1_gray1"
+                                    android:background="@drawable/backgroundlighttertiary_rounded1"
                                     android:padding="14dp"
                                     android:layout_marginTop="-14dp">
                                     <TextView

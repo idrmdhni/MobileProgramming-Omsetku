@@ -8,9 +8,9 @@
 
     <!-- Omsetku Theme Colors -->
     <color name="primary">#205072</color>            <!-- Primary color -->
-    <color name="primary_variant">#173F57</color>    <!-- Darker primary variant -->
+    <color name="primary_variant">#163850</color>    <!-- Darker primary variant -->
     <color name="secondary">#329D9C</color>          <!-- Secondary/accent color -->
-    <color name="secondary_variant">#277A79</color>  <!-- Darker accent variant -->
+    <color name="secondary_variant">#236e6d</color>  <!-- Darker accent variant -->
 
     <!-- Additional colors -->
     <color name="tertiary">#56C596</color>
@@ -27,6 +27,8 @@
 
     <!-- Background colors -->
     <color name="background_light">#FFFFFF</color>
+    <color name="background_light_secondary">#F0F0F0</color>
+    <color name="background_light_tertiary">#E5E5E5</color>
     <color name="surface_light">#FFFFFF</color>
     <color name="background_dark">#121212</color>     <!-- Standard dark theme background -->
     <color name="surface_dark">#1E1E1E</color>
