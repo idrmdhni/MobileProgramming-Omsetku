@@ -53,14 +53,14 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
         recyclerViewProduct = view.findViewById(R.id.rv_product)
 
         productList = ArrayList()
-        productList.add(Product("Lenovo LOQ 15", 69, "11.800.000"))
-        productList.add(Product("Asus TUF A15", 69, "9.210.000"))
-        productList.add(Product("MSI Thin 15", 69, "8.820.000"))
-        productList.add(Product("MacBook Air M4", 69, "16.700.000"))
-        productList.add(Product("Iphone 16", 69, "15.000.000"))
-        productList.add(Product("Samsung S24", 69, "9.060.000"))
-        productList.add(Product("Xiaomi G24i", 69, "1.300.000"))
-        productList.add(Product("Vortex Mono 75", 69, "312.000"))
+        productList.add(Product("Lenovo LOQ 15", 69, 11800000))
+        productList.add(Product("Asus TUF A15", 69, 9210000))
+        productList.add(Product("MSI Thin 15", 69, 8820000))
+        productList.add(Product("MacBook Air M4", 69, 16700000))
+        productList.add(Product("Iphone 16", 69, 15000000))
+        productList.add(Product("Samsung S24", 69, 9060000))
+        productList.add(Product("Xiaomi G24i", 69, 1300000))
+        productList.add(Product("Vortex Mono 75", 69, 312000))
 
         productAdapter = ProductAdapter(productList, this)
         recyclerViewProduct.adapter = productAdapter
@@ -68,12 +68,12 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
         val btnAddProduct: FloatingActionButton = view.findViewById(R.id.btn_add_product)
         btnAddProduct.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                EditProductFragment())
+                AddProductFragment())
         }
     }
 
     override fun onItemEditClicked(product: Product) {
-        val editCategoryFragment = EditProductFragment.newInstance(product.name, product.stock.toString(), product.price)
+        val editCategoryFragment = EditProductFragment.newInstance(product.productName, product.productStock.toString(), product.productPrice.toString())
 
         LoadFragment.loadChildFragment(
             parentFragmentManager,

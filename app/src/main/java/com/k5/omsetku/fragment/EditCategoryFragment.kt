@@ -48,7 +48,7 @@ class EditCategoryFragment : Fragment() {
                 CategoryFragment())
         }
 
-        val categoryNameInput: EditText = view.findViewById(R.id.category_name_input)
+        val categoryNameInput: EditText = view.findViewById(R.id.input_category_name)
         categoryNameInput.setText(categoryName)
     }
 

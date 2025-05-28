@@ -13,21 +13,22 @@
         android:layout_height="wrap_content">
         <View
             android:layout_width="8dp"
-            android:layout_height="58dp"
+            android:layout_height="54dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:background="@drawable/color2_rounded_left"/>
         <TextView
-            android:id="@+id/category_name"
+            android:id="@+id/display_category_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="20dp"
             android:text="Category Name"
             android:textSize="18sp"
             android:textColor="@color/color1" />
+
         <TextView
             android:id="@+id/btn_more"
             android:layout_width="wrap_content"
@@ -35,8 +36,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginEnd="24dp"
-            android:paddingTop="4dp"
+            android:layout_marginEnd="20dp"
+            android:paddingTop="2dp"
             android:text="..."
             android:textColor="@color/pressed_color1_to_primaryvariant_effect"
             android:clickable="true"

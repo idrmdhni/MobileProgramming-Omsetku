@@ -5,11 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
-import com.k5.omsetku.features.sales.Sales
-import com.k5.omsetku.features.sales.SalesAdapter
-import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,14 +14,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [SalesFragment.newInstance] factory method to
+ * Use the [AddProductFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SalesFragment : Fragment() {
-    private lateinit var recyclerViewSales: RecyclerView
-    private lateinit var salesAdapter: SalesAdapter
-    private lateinit var saleList: ArrayList<Sales>
-
+class AddProductFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -43,24 +35,7 @@ class SalesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sales, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        recyclerViewSales = view.findViewById(R.id.rv_sales)
-
-        saleList = ArrayList()
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-
-        salesAdapter = SalesAdapter(saleList)
-        recyclerViewSales.adapter = salesAdapter
+        return inflater.inflate(R.layout.fragment_add_product, container, false)
     }
 
     companion object {
@@ -70,12 +45,12 @@ class SalesFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment SalesFragment.
+         * @return A new instance of fragment AddProductFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            SalesFragment().apply {
+            AddProductFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

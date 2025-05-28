@@ -80,7 +80,7 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
     }
 
     override fun onItemEditClicked(category: Category) {
-        val editCategoryFragment = EditCategoryFragment.newInstance(category.name)
+        val editCategoryFragment = EditCategoryFragment.newInstance(category.categoryName)
 
         LoadFragment.loadChildFragment(
             parentFragmentManager,

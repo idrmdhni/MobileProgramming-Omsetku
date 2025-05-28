@@ -3,20 +3,224 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.SalesFragment"
     android:background="@color/background_light_secondary">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
-        <TextView
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <!-- Header -->
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sales"
-            android:textSize="32dp"
-            android:textStyle="bold"/>
-    </LinearLayout>
+            android:background="@drawable/color1rounded1_bottom"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sales"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Edit Category Input -->
+        <LinearLayout
+            android:id="@+id/form_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/header">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Filter"
+                android:textSize="18sp"
+                android:textColor="@color/color1"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/white_rounded2">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="8dp"
+                    android:paddingHorizontal="12dp"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="STOCK"
+                        android:textSize="12dp" />
+
+                    <EditText
+                        android:id="@+id/stock_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:backgroundTint="@color/focused_gray_to_color2"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="8dp"
+                    android:paddingHorizontal="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PRICE"
+                        android:textSize="12dp"/>
+
+                    <EditText
+                        android:id="@+id/price_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:backgroundTint="@color/focused_gray_to_color2"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.1"
+                    android:background="@drawable/white_rounded2"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="8dp"
+                    android:paddingHorizontal="12dp"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TOTAL SALES"
+                        android:textSize="12dp" />
+
+                    <EditText
+                        android:id="@+id/total_sales_input"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:backgroundTint="@color/focused_gray_to_color2"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/white_rounded2"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="8dp"
+                    android:paddingHorizontal="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TOTAL\nTRANSACTION"
+                        android:textSize="12dp" />
+
+                    <EditText
+                        android:id="@+id/total_transaction_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:backgroundTint="@color/focused_gray_to_color2"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Transaction List"
+                android:textSize="18sp"
+                android:textColor="@color/color1"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="22dp"
+                android:background="@drawable/white_rounded1">
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/search_24px"/>
+                <EditText
+                    android:layout_marginStart="40dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:background="@android:color/transparent"
+                    android:hint="Search Category"
+                    android:layout_centerVertical="true"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/form_wrapper"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingTop="8dp"
+            android:paddingHorizontal="16dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_sales"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:clipToPadding="false" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_add_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/add_24px"
+        app:fabCustomSize="54dp"
+        app:maxImageSize="42dp"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="32dp" />
 </FrameLayout>

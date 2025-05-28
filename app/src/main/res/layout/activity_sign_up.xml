@@ -6,26 +6,26 @@
     android:id="@+id/signup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#205072">
+    android:background="@color/color1">
 
     <LinearLayout
         android:id="@+id/login_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="600dp"
+        android:layout_height="@dimen/wrapper_signup"
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"
-        android:background="@drawable/white_rounded1_top">
+        android:background="@drawable/white_rounded1_top"
+        android:paddingHorizontal="28dp"
+        android:paddingTop="28dp">
         <LinearLayout
             android:id="@+id/back_to_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="24dp"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            tools:ignore="TouchTargetSizeCheck">
+            android:layout_marginBottom="16dp">
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
@@ -40,57 +40,52 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginTop="28dp"
-            android:layout_marginHorizontal="32dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="32sp"
                 android:text="SIGN UP"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 android:textColor="#329D9C"
                 android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_email"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
-                style="@style/input_form" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="16dp"/>
+                style="@style/input_form"
+                android:layout_marginBottom="12dp" />
             <EditText
                 android:id="@+id/input_name"
                 android:hint="Name"
                 android:inputType="textPersonName"
-                style="@style/input_form" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="16dp"/>
+                style="@style/input_form"
+                android:layout_marginBottom="12dp" />
             <EditText
                 android:id="@+id/input_pw"
                 android:hint="Password"
                 android:inputType="textPassword"
-                style="@style/input_form"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="16dp"/>
+                style="@style/input_form"
+                android:layout_marginBottom="12dp" />
             <EditText
                 android:id="@+id/input_confirm_pw"
                 android:hint="Confirm Password"
                 android:inputType="textPassword"
-                style="@style/input_form"/>
-            <View
+                style="@style/input_form" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="32dp"/>
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_signup"
-                android:text="Login"
-                style="@style/btn_form"/>
+                android:layout_height="match_parent">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_signup"
+                    android:text="Login"
+                    style="@style/btn_form"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

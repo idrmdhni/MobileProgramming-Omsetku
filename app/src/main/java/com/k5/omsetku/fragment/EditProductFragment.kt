@@ -61,11 +61,11 @@ class EditProductFragment : Fragment() {
                 ProductFragment())
         }
 
-        val nameInput: EditText = view.findViewById(R.id.product_name_input)
-        val stockInput: EditText = view.findViewById(R.id.stock_input)
-        val priceInput: EditText = view.findViewById(R.id.price_input)
-        val descriptionInput: EditText = view.findViewById(R.id.description_input)
-        val categoryProductInput: EditText = view.findViewById(R.id.category_product_dropdown)
+        val nameInput: EditText = view.findViewById(R.id.input_product_name)
+        val stockInput: EditText = view.findViewById(R.id.input_stock)
+        val priceInput: EditText = view.findViewById(R.id.input_price)
+        val descriptionInput: EditText = view.findViewById(R.id.input_description)
+        val categoryProductInput: EditText = view.findViewById(R.id.dropdown_category_product)
         nameInput.setText(productName)
         stockInput.setText(productStock)
         priceInput.setText(productPrice)
@@ -81,7 +81,7 @@ class EditProductFragment : Fragment() {
         private const val ARG_PRODUCT_CATEGORY = "product_category"
 
         @JvmStatic
-        fun newInstance(productName: String, productStock: String, productPrice: String, productDescription: String = "", productCategory: String = ""): EditProductFragment {
+        fun newInstance(productName: String, productStock: String, productPrice: String, productDescription: String = "None", productCategory: String = "None"): EditProductFragment {
             val fragment = EditProductFragment()
             val args = Bundle()
 

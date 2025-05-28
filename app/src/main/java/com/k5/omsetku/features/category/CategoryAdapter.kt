@@ -23,7 +23,7 @@ class CategoryAdapter(
     }
 
     inner class CategoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val categoryName: TextView = itemView.findViewById(R.id.category_name)
+        val displayCategoryName: TextView = itemView.findViewById(R.id.display_category_name)
         val moreBtn: TextView = itemView.findViewById(R.id.btn_more)
     }
 
@@ -39,7 +39,7 @@ class CategoryAdapter(
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val currentItem = categoryList[position]
 
-        holder.categoryName.text = currentItem.name
+        holder.displayCategoryName.text = currentItem.categoryName
 
         holder.moreBtn.setOnClickListener { anchorView ->
             val inflater = anchorView.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/login_wrapper"
         android:orientation="vertical"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="28dp"
         android:layout_marginBottom="18dp">
         <TextView
             android:layout_width="match_parent"
@@ -33,62 +33,65 @@
     <LinearLayout
         android:id="@+id/login_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="530dp"
+        android:layout_height="@dimen/wrapper_login"
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"
-        android:background="@drawable/white_rounded1_top">
+        android:background="@drawable/white_rounded1_top"
+        android:paddingHorizontal="28dp"
+        android:paddingTop="28dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_margin="32dp">
+            android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="32sp"
                 android:text="LOGIN"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 android:textColor="#329D9C"
                 android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_email"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
-                style="@style/input_form" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="16dp"/>
+                style="@style/input_form"
+                android:layout_marginBottom="12dp" />
             <EditText
                 android:id="@+id/input_pw"
                 android:hint="Password"
                 android:inputType="textPassword"
-                style="@style/input_form"/>
+                style="@style/input_form"
+                android:layout_marginBottom="12dp" />
 
             <TextView
                 tools:ignore="TouchTargetSizeCheck"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:focusable="true"
                 android:clickable="true"
                 android:text="Forget Password?"
                 android:textAlignment="textEnd"
                 android:textColor="@color/pressed_color2_to_secondaryvariant_effect" />
-            <View
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="32dp"/>
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_login"
-                android:text="Login"
-                style="@style/btn_form"/>
+                android:layout_height="match_parent">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_login"
+                    android:text="Login"
+                    style="@style/btn_form"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_horizontal"
-            android:layout_margin="16dp">
+            android:layout_marginBottom="16dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -108,8 +111,6 @@
                 android:clickable="true"
                 android:text="Sign Up"/>
         </LinearLayout>
-
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

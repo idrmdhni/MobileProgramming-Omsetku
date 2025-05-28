@@ -16,6 +16,8 @@ import androidx.appcompat.view.menu.MenuView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.w3c.dom.Text
+import java.text.NumberFormat
+import java.util.Locale
 
 class ProductAdapter(
     private val productList: List<Product>,
@@ -28,9 +30,9 @@ class ProductAdapter(
     }
 
     inner class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val productName: TextView = itemView.findViewById(R.id.product_name)
-        val productStock: TextView = itemView.findViewById(R.id.product_stock)
-        val productPrice: TextView = itemView.findViewById(R.id.product_price)
+        val displayProductName: TextView = itemView.findViewById(R.id.display_product_name)
+        val displayProductStock: TextView = itemView.findViewById(R.id.display_product_stock)
+        val displayProductPrice: TextView = itemView.findViewById(R.id.display_product_price)
         val moreBtn: TextView = itemView.findViewById(R.id.btn_more)
     }
 
@@ -46,9 +48,12 @@ class ProductAdapter(
     @SuppressLint("CutPasteId")
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val currentItem = productList[position]
-        holder.productName.text = currentItem.name
-        holder.productStock.text = currentItem.stock.toInt().toString()
-        holder.productPrice.text = currentItem.price
+
+        val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+
+        holder.displayProductName.text = currentItem.productName
+        holder.displayProductStock.text = currentItem.productStock.toString()
+        holder.displayProductPrice.text = rupiahFormat.format(currentItem.productPrice)
 
         holder.moreBtn.setOnClickListener { anchorView ->
             val inflater = anchorView.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
