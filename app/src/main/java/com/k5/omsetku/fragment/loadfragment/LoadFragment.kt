@@ -8,6 +8,7 @@ object LoadFragment {
         val transaction = fragmentManager.beginTransaction()
         transaction
             .replace(containerId, fragment)
+            .addToBackStack(null)
             .commit()
     }
 
@@ -15,6 +16,7 @@ object LoadFragment {
         val transaction = childFragmentManager.beginTransaction()
         transaction
             .replace(containerId, childFragment)
+            .addToBackStack(null)
             .commit()
     }
 }

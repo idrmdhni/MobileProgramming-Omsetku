@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import com.k5.omsetku.R
+import com.k5.omsetku.fragment.loadfragment.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,6 +38,16 @@ class AddProductFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_add_product, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val btnBacktoProduct: LinearLayout = view.findViewById(R.id.btn_back_to_product)
+        btnBacktoProduct.setOnClickListener {
+            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                ProductFragment())
+        }
     }
 
     companion object {

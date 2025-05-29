@@ -35,24 +35,24 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        LoadFragment.loadMainFragment(supportFragmentManager, fragHost, HomeFragment() )
+        LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, HomeFragment() )
 
         val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
         bottomNav.setOnItemSelectedListener {
             item -> when (item.itemId) {
                 R.id.nav_home -> {
-                    LoadFragment.loadMainFragment(supportFragmentManager, fragHost, HomeFragment()
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, HomeFragment()
                     )
                 }
                 R.id.nav_category -> {
-                    LoadFragment.loadMainFragment(supportFragmentManager, fragHost, CategoryFragment()
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, CategoryFragment()
                     )
                 }
                 R.id.nav_product -> {
-                    LoadFragment.loadMainFragment(supportFragmentManager, fragHost, ProductFragment())
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, ProductFragment())
                 }
                 R.id.nav_sales -> {
-                    LoadFragment.loadMainFragment(supportFragmentManager, fragHost, SalesFragment())
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, SalesFragment())
                 }
             }
             true
