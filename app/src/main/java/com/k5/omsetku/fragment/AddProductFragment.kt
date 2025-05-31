@@ -5,7 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
+import android.widget.Toast
+import com.google.android.material.button.MaterialButton
 import com.k5.omsetku.R
 import com.k5.omsetku.fragment.loadfragment.LoadFragment
 
@@ -48,6 +52,22 @@ class AddProductFragment : Fragment() {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
                 ProductFragment())
         }
+
+        val items = listOf("Item 1", "Item 2", "Item 3")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
+        val dropdownCategory: AutoCompleteTextView = view.findViewById(R.id.dropdown_category)
+        dropdownCategory.setAdapter(adapter)
+
+        val btnSave = view.findViewById<MaterialButton>(R.id.btn_save)
+        btnSave.setOnClickListener {
+            Toast.makeText(requireContext(), "Anda memilih: ${dropdownCategory.text}", Toast.LENGTH_SHORT).show()
+        }
+
+//        dropdownCategory.setOnItemClickListener { parent, view, position, id ->
+//            val selectedItem = parent.getItemAtPosition(position).toString()
+//            Toast.makeText(requireContext(), "Anda memilih: $selectedItem", Toast.LENGTH_SHORT).show()
+//
+//        }
     }
 
     companion object {

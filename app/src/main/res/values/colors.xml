@@ -39,5 +39,8 @@
 
     <!-- Other UI elements -->
     <color name="error">#B00020</color>               <!-- Error color -->
-    <color name="error_dark">#CF6679</color>          <!-- Error color for dark theme -->
+    <color name="error_dark">#CF6679</color>
+    <color name="color_underline_focused">#FF00ACC1</color> <!-- Contoh: Cyan Terang -->
+    <color name="color_underline_error">#FFD32F2F</color>  <!-- Contoh: Merah -->
+    <color name="color_underline_default">#FFBDBDBD</color>          <!-- Error color for dark theme -->
 </resources>

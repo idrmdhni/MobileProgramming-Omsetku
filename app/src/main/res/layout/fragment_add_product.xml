@@ -76,6 +76,7 @@
                         android:paddingHorizontal="12dp">
 
                         <TextView
+                            android:layout_marginStart="4dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="PRODUCT NAME"
@@ -96,8 +97,8 @@
                         android:background="@drawable/white_rounded2"
                         android:orientation="vertical"
                         android:paddingTop="10dp"
-                        android:paddingBottom="8dp"
-                        android:paddingHorizontal="12dp"
+                        android:paddingBottom="16dp"
+                        android:paddingHorizontal="16dp"
                         android:layout_marginTop="8dp">
 
                         <TextView
@@ -106,13 +107,22 @@
                             android:text="CATEGORY"
                             android:textSize="12dp" />
 
-                        <EditText
-                            android:id="@+id/dropdown_category_product"
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:backgroundTint="@color/focused_gray_to_color2"
-                            android:inputType="text"
-                            android:maxLines="1" />
+                            android:layout_height="match_parent"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                            app:boxBackgroundColor="@android:color/transparent"
+                            app:boxStrokeColor="@color/focused_gray_to_color2">
+                            <AutoCompleteTextView
+                                android:id="@+id/dropdown_category"
+                                android:layout_width="match_parent"
+                                android:layout_height="36dp"
+                                android:paddingStart="0dp"
+                                android:paddingEnd="0dp"
+                                android:paddingTop="0dp"
+                                android:paddingBottom="0dp"
+                                android:inputType="none"/>
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -132,6 +142,7 @@
                             android:layout_marginEnd="8dp">
 
                             <TextView
+                                android:layout_marginStart="4dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="STOCK"
@@ -157,6 +168,7 @@
                             android:paddingHorizontal="12dp">
 
                             <TextView
+                                android:layout_marginStart="4dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="PRICE"
@@ -189,6 +201,7 @@
                             android:textSize="12dp"/>
 
                         <EditText
+                            android:layout_marginStart="4dp"
                             android:id="@+id/input_description"
                             android:layout_width="match_parent"
                             android:layout_height="78dp"
@@ -197,7 +210,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_login"
+                    android:id="@+id/btn_save"
                     android:text="Save"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/form_wrapper"

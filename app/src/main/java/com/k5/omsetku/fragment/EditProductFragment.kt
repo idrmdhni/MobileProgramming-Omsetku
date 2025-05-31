@@ -6,10 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.os.bundleOf
+import com.google.android.material.button.MaterialButton
 import com.k5.omsetku.R
+import com.k5.omsetku.features.product.Product
 import com.k5.omsetku.fragment.loadfragment.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
@@ -28,6 +33,7 @@ class EditProductFragment : Fragment() {
     private var productPrice: String? = ""
     private var productDescription: String? = ""
     private var productCategory: String? = ""
+    private var categoryList: ArrayList<Product>? = null
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -61,16 +67,25 @@ class EditProductFragment : Fragment() {
                 ProductFragment())
         }
 
-        val nameInput: EditText = view.findViewById(R.id.input_product_name)
-        val stockInput: EditText = view.findViewById(R.id.input_stock)
-        val priceInput: EditText = view.findViewById(R.id.input_price)
-        val descriptionInput: EditText = view.findViewById(R.id.input_description)
-        val categoryProductInput: EditText = view.findViewById(R.id.dropdown_category_product)
-        nameInput.setText(productName)
-        stockInput.setText(productStock)
-        priceInput.setText(productPrice)
-        descriptionInput.setText(productDescription)
-        categoryProductInput.setText(productCategory)
+        val inputProductName: EditText = view.findViewById(R.id.input_product_name)
+        val inputStock: EditText = view.findViewById(R.id.input_stock)
+        val inputPrice: EditText = view.findViewById(R.id.input_price)
+        val inputDescription: EditText = view.findViewById(R.id.input_description)
+        val dropdownCategory: AutoCompleteTextView = view.findViewById(R.id.dropdown_category)
+        inputProductName.setText(productName)
+        inputStock.setText(productStock)
+        inputPrice.setText(productPrice)
+        inputDescription.setText(productDescription)
+        dropdownCategory.setText(productCategory)
+
+        val items = listOf("Item 1", "Item 2", "Item3")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
+        dropdownCategory.setAdapter(adapter)
+
+        dropdownCategory.setOnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position).toString()
+            dropdownCategory.setText(selectedItem)
+        }
     }
 
     companion object {
@@ -81,7 +96,7 @@ class EditProductFragment : Fragment() {
         private const val ARG_PRODUCT_CATEGORY = "product_category"
 
         @JvmStatic
-        fun newInstance(productName: String, productStock: String, productPrice: String, productDescription: String = "None", productCategory: String = "None"): EditProductFragment {
+        fun newInstance(productName: String, productStock: String, productPrice: String, productCategory: String, productDescription: String): EditProductFragment {
             val fragment = EditProductFragment()
             val args = Bundle()
 

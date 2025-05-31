@@ -73,7 +73,7 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
     }
 
     override fun onItemEditClicked(product: Product) {
-        val editCategoryFragment = EditProductFragment.newInstance(product.productName, product.productStock.toString(), product.productPrice.toString())
+        val editCategoryFragment = EditProductFragment.newInstance(product.productName, product.productStock.toString(), product.productPrice.toString(), "", "")
 
         LoadFragment.loadChildFragment(
             parentFragmentManager,
