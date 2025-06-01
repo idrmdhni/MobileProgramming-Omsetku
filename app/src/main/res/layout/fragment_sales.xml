@@ -200,7 +200,8 @@
             app:layout_constraintTop_toBottomOf="@id/form_wrapper"
             app:layout_constraintBottom_toBottomOf="parent"
             android:paddingTop="8dp"
-            android:paddingHorizontal="16dp">
+            android:paddingHorizontal="16dp"
+            android:orientation="vertical">
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_sales"
                 android:layout_width="match_parent"
@@ -211,7 +212,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_add_product"
+        android:id="@+id/btn_add_sales"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/add_24px"

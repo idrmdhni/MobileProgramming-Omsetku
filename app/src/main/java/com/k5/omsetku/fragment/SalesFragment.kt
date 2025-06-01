@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.k5.omsetku.R
 import com.k5.omsetku.features.product.Product
 import com.k5.omsetku.features.sales.Sales
@@ -65,6 +66,10 @@ class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
         salesAdapter = SalesAdapter(saleList, this)
         recyclerViewSales.adapter = salesAdapter
 
+        val btnAddSales: FloatingActionButton = view.findViewById(R.id.btn_add_sales)
+        btnAddSales.setOnClickListener {
+            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment ,AddSalesFragment())
+        }
     }
 
     override fun onSalesDetailsClicked(

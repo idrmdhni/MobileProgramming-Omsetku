@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+
+    android:background="@drawable/backgroundlightsecondary_rounded1">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/color1_rounded1_top">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Pilih Item"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/closeButton"-->
+<!--        android:layout_width="24dp"-->
+<!--        android:layout_height="24dp"-->
+<!--        android:src="@android:drawable/ic_menu_close_clear_cancel"-->
+<!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:contentDescription="Tutup" />-->
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="22dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/white_rounded1">
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/search_24px"/>
+            <EditText
+                android:id="@+id/input_search_product"
+                android:layout_marginStart="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:background="@android:color/transparent"
+                android:hint="Search Product"
+                android:layout_centerVertical="true"
+                android:inputType="text"
+                android:maxLines="1" />
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_choose_product_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="6dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:cornerRadius="32dp"
+                android:backgroundTint="@color/pressed_transparent_to_color2_effect"
+                android:textColor="@color/pressed_color2_to_secondaryvariant_effect"
+                app:rippleColor="@color/ripple_effect_default"
+                app:strokeColor="@color/color2"
+                android:text="Cancel" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="0.5" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_add"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:cornerRadius="32dp"
+                android:backgroundTint="@color/color2"
+                android:textColor="@color/white"
+                app:rippleColor="@color/ripple_effect_default"
+                android:text="Add" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

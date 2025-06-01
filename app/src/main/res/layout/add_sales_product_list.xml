@@ -42,12 +42,12 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="8dp"
             android:paddingVertical="6dp"
+            android:paddingHorizontal="8dp"
             android:layout_gravity="center"
-            android:background="@drawable/backgroundlightsecondary_rounded1"
+            android:background="@drawable/backgroundlightsecondary_rounded2"
             android:gravity="center_vertical">
             <ImageView
                 android:layout_width="wrap_content"
@@ -55,12 +55,17 @@
                 android:paddingTop="1dp"
                 android:paddingStart="2dp"
                 android:src="@drawable/add_circle_24px" />
-            <TextView
+            <EditText
                 android:id="@+id/total_product"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:layout_marginHorizontal="6dp"
                 android:text="1"
+                android:inputType="number"
+                android:maxLines="1"
+                android:background="@android:color/transparent"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/color1" />

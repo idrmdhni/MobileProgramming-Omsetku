@@ -22,7 +22,7 @@ class AddSalesProductListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.sales_details_product_list, parent, false)
+            .inflate(R.layout.add_sales_product_list, parent, false)
 
         return ProductViewHolder(itemView)
     }

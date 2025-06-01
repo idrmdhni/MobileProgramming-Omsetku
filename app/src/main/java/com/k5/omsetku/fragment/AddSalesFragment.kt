@@ -5,7 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
+import com.k5.omsetku.features.product.Product
+import com.k5.omsetku.features.sales.AddSalesProductListAdapter
+import com.k5.omsetku.features.sales.ChooseProductListAdapter
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -17,10 +23,14 @@ private const val ARG_PARAM2 = "param2"
  * Use the [AddSalesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AddSalesFragment : Fragment() {
+class AddSalesFragment : Fragment(), ChooseProductFragment.OnItemSelectedListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    private lateinit var rvAddSalesProductList: RecyclerView
+    private lateinit var addSalesProductListAdapter: AddSalesProductListAdapter
+    private lateinit var productList: ArrayList<Product>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +46,43 @@ class AddSalesFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_add_sales, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        productList = ArrayList()
+        productList.add(Product("1", "Lenovo LOQ 15", 69, 11800000, "laptop"))
+        productList.add(Product("2", "Asus TUF A15", 69, 9210000, "laptop"))
+        productList.add(Product("3", "MSI Thin 15", 69, 8820000, "laptop"))
+        productList.add(Product("4", "MacBook Air M4", 69, 16700000, "laptop"))
+        productList.add(Product("5", "Iphone 16", 69, 15000000, "smartphone"))
+        productList.add(Product("6", "Samsung S24", 69, 9060000, "smartphone"))
+        productList.add(Product("7", "Xiaomi G24i", 69, 1300000, "monitor"))
+        productList.add(Product("8", "Vortex Mono 75", 69, 312000, "accessories"))
+
+        rvAddSalesProductList = view.findViewById(R.id.rv_add_sales_product_list)
+        addSalesProductListAdapter = AddSalesProductListAdapter(productList)
+        rvAddSalesProductList.adapter = addSalesProductListAdapter
+
+        val btnAddProduct: LinearLayout = view.findViewById(R.id.btn_add_product)
+        btnAddProduct.setOnClickListener {
+            // Handle add product button click
+            showChooseProductFragment()
+        }
+
+    }
+
+    private fun showChooseProductFragment() {
+        val dialogFragment = ChooseProductFragment()
+        dialogFragment.setOnItemSelectedListener(this) // Set listener untuk callback
+        dialogFragment.show(parentFragmentManager, "choose_item_dialog")
+    }
+
+    override fun onItemSelected(item: Product) {
+        // Handle the selected item here in your Activity/Fragment
+        Toast.makeText(requireContext(), "Selected Item: ${item.productName}", Toast.LENGTH_SHORT).show()
+        // Lakukan sesuatu dengan item yang dipilih, misalnya menambahkannya ke daftar di Activity
     }
 
     companion object {
