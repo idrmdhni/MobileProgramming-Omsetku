@@ -58,11 +58,11 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
         recyclerViewCategory = view.findViewById(R.id.rv_category)
 
         categoryList = ArrayList()
-        categoryList.add(Category("Accessories"))
-        categoryList.add(Category("Laptop"))
-        categoryList.add(Category("Smartphone"))
-        categoryList.add(Category("Monitor"))
-        categoryList.add(Category("Sparepart"))
+        categoryList.add(Category("accessories", "Accessories"))
+        categoryList.add(Category("laptop", "Laptop"))
+        categoryList.add(Category("smartphone", "Smartphone"))
+        categoryList.add(Category("monitor", "Monitor"))
+        categoryList.add(Category("sparepart", "Sparepart"))
 
         categoryAdapter = CategoryAdapter(categoryList, this)
         recyclerViewCategory.adapter = categoryAdapter

@@ -5,10 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
+import com.k5.omsetku.features.product.Product
 import com.k5.omsetku.features.sales.Sales
 import com.k5.omsetku.features.sales.SalesAdapter
+import com.k5.omsetku.fragment.loadfragment.LoadFragment
 import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
@@ -21,7 +24,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [SalesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SalesFragment : Fragment() {
+class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
     private lateinit var recyclerViewSales: RecyclerView
     private lateinit var salesAdapter: SalesAdapter
     private lateinit var saleList: ArrayList<Sales>
@@ -52,16 +55,25 @@ class SalesFragment : Fragment() {
         recyclerViewSales = view.findViewById(R.id.rv_sales)
 
         saleList = ArrayList()
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
+        saleList.add(Sales("1", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
+        saleList.add(Sales("2", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
+        saleList.add(Sales("3", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
+        saleList.add(Sales("4", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
+        saleList.add(Sales("5", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
+        saleList.add(Sales("6", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
 
-        salesAdapter = SalesAdapter(saleList)
+        salesAdapter = SalesAdapter(saleList, this)
         recyclerViewSales.adapter = salesAdapter
+
     }
+
+    override fun onSalesDetailsClicked(
+        sales: Sales,
+        position: Int
+    ) {
+        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment ,SalesDetailsFragment())
+    }
+
 
     companion object {
         /**

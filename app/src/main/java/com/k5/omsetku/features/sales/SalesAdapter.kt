@@ -3,27 +3,32 @@ package com.k5.omsetku.features.sales
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
 import java.text.NumberFormat
 import java.util.Locale
 
 class SalesAdapter(
-    private val saleList: List<Sales>
+    private val saleList: List<Sales>,
+    private val onItemActionListener: OnItemActionListener?
 ): RecyclerView.Adapter<SalesAdapter.SalesViewHolder>() {
+    interface OnItemActionListener {
+        fun onSalesDetailsClicked(sales: Sales, position: Int)
+    }
 
     inner class SalesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val displayInvoiceNumber: TextView = itemView.findViewById(R.id.display_invoice_number)
         val displayPurchaseDate: TextView = itemView.findViewById(R.id.display_purchase_date)
         val displayTotalPurchase: TextView = itemView.findViewById(R.id.display_total_purchase)
+
+        val btnDetails: LinearLayout = itemView.findViewById(R.id.btn_details)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SalesViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.sales, parent, false)
+            .inflate(R.layout.sale_list, parent, false)
 
         return SalesViewHolder(itemView)
     }
@@ -37,6 +42,9 @@ class SalesAdapter(
         holder.displayPurchaseDate.text = currentItem.purchaseDate
         holder.displayTotalPurchase.text = rupiahFormat.format(currentItem.totalPurchase)
 
+        holder.btnDetails.setOnClickListener {
+            onItemActionListener?.onSalesDetailsClicked(currentItem, position)
+        }
     }
 
     override fun getItemCount() = saleList.size

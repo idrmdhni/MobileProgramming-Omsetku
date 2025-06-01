@@ -15,7 +15,7 @@
                 android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/color1rounded1_bottom"
+                android:background="@drawable/color1_rounded1_bottom"
                 android:orientation="vertical"
                 android:padding="16dp"
                 app:layout_constraintTop_toTopOf="parent">

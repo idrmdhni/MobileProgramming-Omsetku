@@ -4,18 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.k5.omsetku.R
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.view.menu.MenuView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import org.w3c.dom.Text
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -40,7 +36,7 @@ class ProductAdapter(
         context = parent.context
 
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_product, parent, false)
+            .inflate(R.layout.product_list, parent, false)
 
         return ProductViewHolder(itemView)
     }

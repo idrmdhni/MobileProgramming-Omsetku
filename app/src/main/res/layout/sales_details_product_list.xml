@@ -20,39 +20,40 @@
             android:orientation="vertical"
             android:layout_gravity="center">
             <TextView
-                android:id="@+id/display_invoice_number"
+                android:id="@+id/display_product_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:text="INV-2025-04-19-001"
-                android:textColor="@color/color1" />
+                android:text="Product Name"
+                android:textStyle="bold"
+                android:textColor="@color/black" />
             <TextView
-                android:id="@+id/display_purchase_date"
+                android:id="@+id/display_product_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="6dp"
-                android:text="12 April 2025, 14:30"/>
+                android:text="Category"
+                android:textSize="12sp"/>
             <TextView
-                android:id="@+id/display_total_purchase"
+                android:id="@+id/display_product_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="12.000.000"
-                android:textColor="@color/color1"/>
+                android:text="Rp000.000.000" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="26dp"
+            android:layout_width="wrap_content"
             android:layout_height="26dp"
+            android:paddingHorizontal="18dp"
             android:layout_gravity="center"
-            android:background="@drawable/color1_circle"
-            android:clickable="true"
-            android:focusable="true">
-            <ImageView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_marginStart="1dp"
-                android:src="@drawable/chevron_right_24px"
-                app:tint="@color/pressed_white_to_textsecondarydark"/>
+            android:background="@drawable/backgroundlightsecondary_rounded1" >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/color1" />
         </LinearLayout>
     </LinearLayout>
 

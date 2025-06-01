@@ -31,7 +31,7 @@ class CategoryAdapter(
         context = parent.context
 
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.category, parent, false)
+            .inflate(R.layout.category_list, parent, false)
 
         return CategoryViewHolder(itemView)
     }
