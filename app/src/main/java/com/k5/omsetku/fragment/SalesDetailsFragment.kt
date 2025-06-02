@@ -11,6 +11,7 @@ import com.k5.omsetku.R
 import com.k5.omsetku.features.product.Product
 import com.k5.omsetku.features.product.ProductAdapter
 import com.k5.omsetku.features.sales.SalesDetailsProductListAdapter
+import com.k5.omsetku.fragment.loadfragment.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,7 +51,11 @@ class SalesDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rvSalesDetailsProductList = view.findViewById(R.id.rv_sales_details_product_list)
+        val btnBackToSales: LinearLayout = view.findViewById(R.id.btn_back_to_sales)
+        btnBackToSales.setOnClickListener {
+            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                SalesFragment())
+        }
 
         productList = ArrayList()
         productList.add(Product("1", "Lenovo LOQ 15", 69, 11800000, "laptop"))
@@ -62,6 +67,7 @@ class SalesDetailsFragment : Fragment() {
         productList.add(Product("7", "Xiaomi G24i", 69, 1300000, "monitor"))
         productList.add(Product("8", "Vortex Mono 75", 69, 312000, "accessories"))
 
+        rvSalesDetailsProductList = view.findViewById(R.id.rv_sales_details_product_list)
         salesDetailsProductListAdapter = SalesDetailsProductListAdapter(productList)
         rvSalesDetailsProductList.adapter = salesDetailsProductListAdapter
     }

@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
 import com.k5.omsetku.features.product.Product
 import com.k5.omsetku.features.sales.AddSalesProductListAdapter
+import com.k5.omsetku.features.sales.Sales
+import com.k5.omsetku.fragment.loadfragment.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -51,15 +53,11 @@ class AddSalesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        productList = ArrayList()
-//        productList.add(Product("1", "Lenovo LOQ 15", 69, 11800000, "laptop"))
-//        productList.add(Product("2", "Asus TUF A15", 69, 9210000, "laptop"))
-//        productList.add(Product("3", "MSI Thin 15", 69, 8820000, "laptop"))
-//        productList.add(Product("4", "MacBook Air M4", 69, 16700000, "laptop"))
-//        productList.add(Product("5", "Iphone 16", 69, 15000000, "smartphone"))
-//        productList.add(Product("6", "Samsung S24", 69, 9060000, "smartphone"))
-//        productList.add(Product("7", "Xiaomi G24i", 69, 1300000, "monitor"))
-//        productList.add(Product("8", "Vortex Mono 75", 69, 312000, "accessories"))
+        val btnBackToSales: LinearLayout = view.findViewById(R.id.btn_back_to_sales)
+        btnBackToSales.setOnClickListener {
+            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                SalesFragment())
+        }
 
         rvAddSalesProductList = view.findViewById(R.id.rv_add_sales_product_list)
         addSalesProductListAdapter = AddSalesProductListAdapter()

@@ -20,13 +20,30 @@
             android:padding="16dp"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/btn_back_to_sales"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add Sales"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/rounded_arrow_back_24"
+                    app:tint="@color/pressed_white_to_textsecondarydark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add Sales"
+                    android:textColor="@color/pressed_white_to_textsecondarydark"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
 
         <ScrollView
