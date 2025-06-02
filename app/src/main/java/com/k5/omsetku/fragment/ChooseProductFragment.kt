@@ -3,7 +3,6 @@ package com.k5.omsetku.fragment
 // ChooseItemDialogFragment.kt
 import android.app.Dialog
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,9 +15,9 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.features.product.Product
@@ -27,13 +26,16 @@ import com.k5.omsetku.R
 import androidx.core.graphics.drawable.toDrawable
 
 class ChooseProductFragment: DialogFragment() {
-
-    private lateinit var recyclerViewItems: RecyclerView
-    private lateinit var itemAdapter: ChooseProductListAdapter
+    private lateinit var rvChooseProductList: RecyclerView
+    private lateinit var chooseProductListAdapter: ChooseProductListAdapter
     private lateinit var searchEditText: EditText
-    private lateinit var closeButton: ImageView
     private lateinit var cancelButton: Button
     private lateinit var addButton: Button
+
+    companion object {
+        const val REQUEST_KEY_SELECTED_PRODUCTS = "request_key_selected_products"
+        const val BUNDLE_KEY_SELECTED_PRODUCTS = "bundle_key_selected_products"
+    }
 
     // Data dummy untuk contoh
     private val allItems = listOf(
@@ -65,7 +67,7 @@ class ChooseProductFragment: DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerViewItems = view.findViewById(R.id.rv_choose_product_list)
+        rvChooseProductList = view.findViewById(R.id.rv_choose_product_list)
         searchEditText = view.findViewById(R.id.input_search_product)
         cancelButton = view.findViewById(R.id.btn_cancel)
         addButton = view.findViewById(R.id.btn_add)
@@ -76,12 +78,12 @@ class ChooseProductFragment: DialogFragment() {
     }
 
     private fun setupRecyclerView() {
-        itemAdapter = ChooseProductListAdapter(allItems) { item ->
-            itemAdapter.toggleSelection(item)
+        chooseProductListAdapter = ChooseProductListAdapter(allItems) { product ->
+            chooseProductListAdapter.toggleSelection(product)
             updateAddButtonState()
         }
-        recyclerViewItems.layoutManager = LinearLayoutManager(context)
-        recyclerViewItems.adapter = itemAdapter
+        rvChooseProductList.layoutManager = LinearLayoutManager(context)
+        rvChooseProductList.adapter = chooseProductListAdapter
     }
 
     private fun setupListeners() {
@@ -90,15 +92,27 @@ class ChooseProductFragment: DialogFragment() {
         }
 
         addButton.setOnClickListener {
-            Toast.makeText(context, "Tambahkan clicked!", Toast.LENGTH_SHORT).show()
-            dismiss()
+            val selectedItems = chooseProductListAdapter.getSelectedProducts()
+            if (selectedItems.isNotEmpty()) {
+                // Buat Bundle untuk menyimpan data
+                val resultBundle = Bundle().apply {
+                    putParcelableArrayList(BUNDLE_KEY_SELECTED_PRODUCTS, ArrayList(selectedItems))
+                }
+                // Kirim hasil ke Fragment sebelumnya
+                setFragmentResult(REQUEST_KEY_SELECTED_PRODUCTS, resultBundle)
+
+//                Toast.makeText(context, "Selected ${selectedItems.size} items", Toast.LENGTH_SHORT).show()
+                dismiss() // Tutup dialog
+            } else {
+                Toast.makeText(context, "Please select at least one item", Toast.LENGTH_SHORT).show()
+            }
         }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                itemAdapter.filter.filter(s.toString())
+                chooseProductListAdapter.filter.filter(s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -108,19 +122,9 @@ class ChooseProductFragment: DialogFragment() {
     }
 
     private fun updateAddButtonState() {
-        val selectedCount = itemAdapter.getSelectedItems().size
+        val selectedCount = chooseProductListAdapter.getSelectedProducts().size
         addButton.isEnabled = selectedCount > 0
         addButton.alpha = if (selectedCount > 0) 1.0f else 0.5f
-    }
-
-    interface OnItemSelectedListener {
-        fun onItemSelected(item: Product)
-    }
-
-    private var onItemSelectedListener: OnItemSelectedListener? = null
-
-    fun setOnItemSelectedListener(listener: OnItemSelectedListener) {
-        this.onItemSelectedListener = listener
     }
 
     override fun onStart() {
