@@ -1,5 +1,6 @@
 package com.k5.omsetku.features.sales
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,14 @@ import com.k5.omsetku.R
 import java.text.NumberFormat
 import java.util.Locale
 
-class AddSalesProductListAdapter(
-    private val productList: List<Product>
-): RecyclerView.Adapter<AddSalesProductListAdapter.ProductViewHolder>() {
+class AddSalesProductListAdapter: RecyclerView.Adapter<AddSalesProductListAdapter.ProductViewHolder>() {
+    private var productList: List<Product> = emptyList()
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateProducts(newProducts: List<Product>) {
+        this.productList = newProducts
+        notifyDataSetChanged()
+    }
 
     inner class ProductViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val displayProductName: TextView = itemView.findViewById(R.id.display_product_name)

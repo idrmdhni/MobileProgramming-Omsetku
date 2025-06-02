@@ -1,7 +1,6 @@
 package com.k5.omsetku.features.sales
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +19,8 @@ class ChooseProductListAdapter(
     private var productList: List<Product>,
     private val onItemClick: (Product) -> Unit
 ): RecyclerView.Adapter<ChooseProductListAdapter.ProductViewHolder>(), Filterable {
-    private var filteredItems: List<Product> = productList
-    private val selectedItemIds = mutableSetOf<String>()
+    private var filteredProducts: List<Product> = productList
+    private val selectedProductIds = mutableSetOf<String>()
 
     inner class ProductViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val displayProductName: TextView = itemView.findViewById(R.id.display_product_name)
@@ -40,7 +39,7 @@ class ChooseProductListAdapter(
 
     @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val currentProduct = filteredItems[position]
+        val currentProduct = filteredProducts[position]
 
         val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
 
@@ -49,7 +48,7 @@ class ChooseProductListAdapter(
         holder.displayProductPrice.text = rupiahFormat.format(currentProduct.productPrice)
         holder.displayProductStock.text = currentProduct.productStock.toString()
 
-        if (selectedItemIds.contains(currentProduct.productId)) {
+        if (selectedProductIds.contains(currentProduct.productId)) {
             holder.itemContainer.setCardBackgroundColor("#E5E5E5".toColorInt())
         } else {
             holder.itemContainer.setCardBackgroundColor("#FFFFFF".toColorInt())
@@ -59,47 +58,46 @@ class ChooseProductListAdapter(
 
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateItems(newItems: List<Product>) {
-        this.productList = newItems
-        this.filteredItems = newItems
-        notifyDataSetChanged()
-    }
-
     // Method untuk mengelola item yang terpilih berdasarkan ID item
     fun toggleSelection(item: Product) {
-        if (selectedItemIds.contains(item.productId)) {
-            selectedItemIds.remove(item.productId)
+        if (selectedProductIds.contains(item.productId)) {
+            selectedProductIds.remove(item.productId)
         } else {
-            selectedItemIds.add(item.productId)
+            selectedProductIds.add(item.productId)
         }
 
-        val currentPosition = filteredItems.indexOfFirst { it.productId == item.productId }
+        val currentPosition = filteredProducts.indexOfFirst { it.productId == item.productId }
         if (currentPosition != -1) {
             notifyItemChanged(currentPosition)
         }
     }
 
-    fun getSelectedItems(): List<Product> {
-        return filteredItems.filter { selectedItemIds.contains(it.productId) }
+    fun getSelectedProducts(): List<Product> {
+        return filteredProducts.filter { selectedProductIds.contains(it.productId) }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateProducts(newItems: List<Product>) {
+        this.productList = newItems
+        this.filteredProducts = newItems
+        notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun clearSelections() {
-        selectedItemIds.clear()
+        selectedProductIds.clear()
         notifyDataSetChanged()
     }
-
 
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val charSearch = constraint.toString()
-                filteredItems = if (charSearch.isEmpty()) {
+                filteredProducts = if (charSearch.isEmpty()) {
                     productList
                 } else {
                     val resultList = mutableListOf<Product>()
-                    for (row in productList) { // Filter dari daftar asli
+                    for (row in productList) { // Filter dari list asli
                         if (row.productName.lowercase(Locale.ROOT).contains(charSearch.lowercase(Locale.ROOT)) ||
                             row.categoryId.lowercase(Locale.ROOT).contains(charSearch.lowercase(Locale.ROOT))) {
                             resultList.add(row)
@@ -108,20 +106,20 @@ class ChooseProductListAdapter(
                     resultList
                 }
                 val filterResults = FilterResults()
-                filterResults.values = filteredItems
+                filterResults.values = filteredProducts
                 return filterResults
             }
 
             @SuppressLint("NotifyDataSetChanged")
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredItems = results?.values as List<Product>
+                filteredProducts = results?.values as List<Product>
 
                 notifyDataSetChanged()
             }
         }
     }
 
-    override fun getItemCount() = filteredItems.size
+    override fun getItemCount() = filteredProducts.size
 }
 
