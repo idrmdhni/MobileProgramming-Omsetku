@@ -1,13 +1,23 @@
 package com.k5.omsetku.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.k5.omsetku.LogInActivity
 import com.k5.omsetku.R
+import com.k5.omsetku.databinding.FragmentEditProductBinding
+import com.k5.omsetku.databinding.FragmentHomeBinding
+import kotlin.jvm.java
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,6 +34,13 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
+    private var _binding: FragmentHomeBinding? = null
+    private var userProfileListener: ListenerRegistration? = null
+
+    private val binding get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -37,15 +54,76 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val account: ImageView = view.findViewById(R.id.account)
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
+
+        val account: ImageView = binding.account
 
         account.setOnClickListener { loadFragment(AccountFragment()) }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Mulai mendengarkan data saat fragment aktif
+        setupFirestoreListeners()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Hentikan mendengarkan data saat fragment tidak aktif
+        removeFirestoreListeners()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        removeFirestoreListeners() // Pastikan listener dilepas juga saat view dihancurkan
+        _binding = null
+    }
+
+    private fun setupFirestoreListeners() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val userUid = currentUser.uid
+
+            // Listener untuk profil pengguna
+            userProfileListener = db.collection("users").document(userUid)
+                .addSnapshotListener { documentSnapshot, e ->
+                    if (e != null) {
+                        Log.w("HomeFragment", "Listen failed.", e)
+                        Toast.makeText(requireContext(), "Gagal memuat profil: ${e.message}", Toast.LENGTH_SHORT).show()
+                        return@addSnapshotListener
+                    }
+
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        val name = documentSnapshot.getString("name")
+                        val email = documentSnapshot.getString("email")
+                        binding.accountName.text = name ?: email
+                        Log.d("HomeFragment", "User data updated: Name=${name}, Email=${email}")
+                    } else {
+                        binding.accountName.text = "Selamat Datang!"
+                        Log.d("HomeFragment", "Dokumen profil user tidak ditemukan atau sudah dihapus.")
+                    }
+                }
+        } else {
+            // Jika tidak ada pengguna yang login, arahkan kembali ke LoginActivity
+            Toast.makeText(requireContext(), "Anda harus login.", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(requireContext(), LogInActivity::class.java))
+            requireActivity().finish() // Penting: tutup activity saat ini
+        }
+    }
+
+    private fun removeFirestoreListeners() {
+        userProfileListener?.remove() // Hentikan listener profil
+        userProfileListener = null
+        Log.d("HomeFragment", "Firestore listeners removed.")
     }
 
     companion object {

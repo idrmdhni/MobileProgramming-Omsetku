@@ -2,20 +2,27 @@ package com.k5.omsetku
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.button.MaterialButton
 import androidx.core.graphics.toColorInt
+import com.google.firebase.auth.FirebaseAuth
+import com.k5.omsetku.databinding.ActivityLogInBinding
 
 class LogInActivity : AppCompatActivity() {
+    private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityLogInBinding
+
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_log_in)
+        binding = ActivityLogInBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        auth = FirebaseAuth.getInstance()
 
         window.statusBarColor = "#205072".toColorInt()
         window.navigationBarColor = "#205072".toColorInt()
@@ -27,15 +34,30 @@ class LogInActivity : AppCompatActivity() {
             insets
         }
 
-        val signUpText: TextView = findViewById(R.id.signup_text)
-        val btnLogin: MaterialButton = findViewById(R.id.btn_login)
-        signUpText.setOnClickListener {
+        binding.signupText.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
-        btnLogin.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+        binding.btnLogin.setOnClickListener {
+            val email = binding.inputEmail.text.toString().trim()
+            val password = binding.inputPw.text.toString().trim()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Input tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            auth.signInWithEmailAndPassword(email, password).
+                addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Login berhasil!", Toast.LENGTH_SHORT).show()
+
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this, "Login gagal!: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
         }
     }
 }

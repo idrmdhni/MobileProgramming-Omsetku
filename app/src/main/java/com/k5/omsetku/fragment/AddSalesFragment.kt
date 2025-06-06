@@ -10,10 +10,9 @@ import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
-import com.k5.omsetku.features.product.Product
-import com.k5.omsetku.features.sales.AddSalesProductListAdapter
-import com.k5.omsetku.features.sales.Sales
-import com.k5.omsetku.fragment.loadfragment.LoadFragment
+import com.k5.omsetku.model.Product
+import com.k5.omsetku.adapter.AddSalesProductListAdapter
+import com.k5.omsetku.util.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

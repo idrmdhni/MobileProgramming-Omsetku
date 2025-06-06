@@ -1,8 +1,7 @@
-package com.k5.omsetku.features.product
+package com.k5.omsetku.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.k5.omsetku.R
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.k5.omsetku.R
+import com.k5.omsetku.model.Product
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -55,10 +56,12 @@ class ProductAdapter(
             val inflater = anchorView.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_action_edit_delete, null)
 
-            val popupWindow = PopupWindow(popupView,
+            val popupWindow = PopupWindow(
+                popupView,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                true)
+                true
+            )
 
             popupView.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),

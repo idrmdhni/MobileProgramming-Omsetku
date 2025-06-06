@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.k5.omsetku.R
-import com.k5.omsetku.features.product.Product
-import com.k5.omsetku.features.product.ProductAdapter
-import com.k5.omsetku.fragment.loadfragment.LoadFragment
+import com.k5.omsetku.model.Product
+import com.k5.omsetku.adapter.ProductAdapter
+import com.k5.omsetku.util.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

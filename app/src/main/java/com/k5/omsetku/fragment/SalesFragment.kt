@@ -5,14 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.k5.omsetku.R
-import com.k5.omsetku.features.product.Product
-import com.k5.omsetku.features.sales.Sales
-import com.k5.omsetku.features.sales.SalesAdapter
-import com.k5.omsetku.fragment.loadfragment.LoadFragment
+import com.k5.omsetku.model.Sales
+import com.k5.omsetku.adapter.SalesAdapter
+import com.k5.omsetku.util.LoadFragment
 import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match

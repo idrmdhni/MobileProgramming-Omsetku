@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.k5.omsetku.R
-import com.k5.omsetku.features.category.Category
-import com.k5.omsetku.features.category.CategoryAdapter
-import com.k5.omsetku.features.product.ProductAdapter
-import com.k5.omsetku.fragment.loadfragment.LoadFragment
+import com.k5.omsetku.model.Category
+import com.k5.omsetku.adapter.CategoryAdapter
+import com.k5.omsetku.adapter.ProductAdapter
+import com.k5.omsetku.util.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

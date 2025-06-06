@@ -1,4 +1,4 @@
-package com.k5.omsetku.features.sales
+package com.k5.omsetku.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
+import com.k5.omsetku.model.Sales
 import java.text.NumberFormat
 import java.util.Locale
 

@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.k5.omsetku.R
-import com.k5.omsetku.fragment.loadfragment.LoadFragment
+import com.k5.omsetku.util.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

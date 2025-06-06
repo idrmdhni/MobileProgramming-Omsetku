@@ -1,4 +1,4 @@
-package com.k5.omsetku.features.sales
+package com.k5.omsetku.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import android.widget.Filterable
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.k5.omsetku.features.product.Product
+import com.k5.omsetku.model.Product
 import com.k5.omsetku.R
 import java.text.NumberFormat
 import java.util.Locale

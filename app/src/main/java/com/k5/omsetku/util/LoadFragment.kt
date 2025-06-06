@@ -1,4 +1,4 @@
-package com.k5.omsetku.fragment.loadfragment
+package com.k5.omsetku.util
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

@@ -20,8 +20,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.k5.omsetku.features.product.Product
-import com.k5.omsetku.features.sales.ChooseProductListAdapter
+import com.k5.omsetku.model.Product
+import com.k5.omsetku.adapter.ChooseProductListAdapter
 import com.k5.omsetku.R
 import androidx.core.graphics.drawable.toDrawable
 

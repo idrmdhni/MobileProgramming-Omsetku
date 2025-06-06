@@ -7,26 +7,44 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.k5.omsetku.databinding.ActivityWelcomeScreenBinding
 
 class WelcomeScreenActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityWelcomeScreenBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_welcome_screen)
+        binding = ActivityWelcomeScreenBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.welcome)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        val signUpBtn: MaterialButton = findViewById(R.id.btn_to_signup)
-        val signInBtn: MaterialButton = findViewById(R.id.btn_to_login)
-        signUpBtn.setOnClickListener {
+        binding.btnToSignup.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
-        signInBtn.setOnClickListener {
+
+        binding.btnToLogin.setOnClickListener {
             val intent = Intent(this, LogInActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val auth = FirebaseAuth.getInstance()
+        val currentUser: FirebaseUser? = auth.currentUser
+
+        if (currentUser != null) {
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }

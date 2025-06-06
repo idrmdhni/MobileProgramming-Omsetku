@@ -82,7 +82,7 @@
                 android:layout_height="match_parent">
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_signup"
-                    android:text="Login"
+                    android:text="Sign Up"
                     style="@style/btn_form"
                     android:layout_gravity="center"/>
             </LinearLayout>

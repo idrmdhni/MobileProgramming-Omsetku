@@ -1,8 +1,7 @@
-package com.k5.omsetku.features.category
+package com.k5.omsetku.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import com.k5.omsetku.R
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -11,6 +10,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.k5.omsetku.R
+import com.k5.omsetku.model.Category
 
 class CategoryAdapter(
     private val categoryList: List<Category>,
@@ -45,10 +46,12 @@ class CategoryAdapter(
             val inflater = anchorView.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_action_edit_delete, null)
 
-            val popupWindow = PopupWindow(popupView,
+            val popupWindow = PopupWindow(
+                popupView,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                true) // Agar dapat ditutup dengan sentuhan di luar
+                true
+            ) // Agar dapat ditutup dengan sentuhan di luar
 
             // Mengukur popupView untuk mendapatkan dimensinya
             popupView.measure(

@@ -14,7 +14,7 @@ import com.k5.omsetku.fragment.HomeFragment
 import com.k5.omsetku.fragment.ProductFragment
 import com.k5.omsetku.fragment.SalesFragment
 import androidx.core.graphics.toColorInt
-import com.k5.omsetku.fragment.loadfragment.LoadFragment
+import com.k5.omsetku.util.LoadFragment
 
 class MainActivity : AppCompatActivity() {
     private val fragHost: Int = R.id.host_fragment

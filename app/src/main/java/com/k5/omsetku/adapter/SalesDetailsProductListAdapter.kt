@@ -1,24 +1,18 @@
-package com.k5.omsetku.features.sales
+package com.k5.omsetku.adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.k5.omsetku.features.product.Product
+import com.k5.omsetku.model.Product
 import com.k5.omsetku.R
 import java.text.NumberFormat
 import java.util.Locale
 
-class AddSalesProductListAdapter: RecyclerView.Adapter<AddSalesProductListAdapter.ProductViewHolder>() {
-    private var productList: List<Product> = emptyList()
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateProducts(newProducts: List<Product>) {
-        this.productList = newProducts
-        notifyDataSetChanged()
-    }
+class SalesDetailsProductListAdapter(
+    private val productList: List<Product>
+): RecyclerView.Adapter<SalesDetailsProductListAdapter.ProductViewHolder>() {
 
     inner class ProductViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val displayProductName: TextView = itemView.findViewById(R.id.display_product_name)
@@ -28,7 +22,7 @@ class AddSalesProductListAdapter: RecyclerView.Adapter<AddSalesProductListAdapte
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.add_sales_product_list, parent, false)
+            .inflate(R.layout.sales_details_product_list, parent, false)
 
         return ProductViewHolder(itemView)
     }
