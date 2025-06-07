@@ -1,5 +1,6 @@
 package com.k5.omsetku.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,40 +10,39 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.google.android.material.button.MaterialButton
 import com.k5.omsetku.R
+import com.k5.omsetku.databinding.CategoryListBinding
 import com.k5.omsetku.model.Category
 
 class CategoryAdapter(
-    private val categoryList: List<Category>,
+    private var categoryList: List<Category>,
     private var onItemActionListener: OnItemActionListener?
 ): RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
-    private lateinit var context: Context
-
     interface OnItemActionListener {
         fun onItemEditClicked(category: Category)
+        fun onItemDeleteClicked(category: Category)
     }
 
-    inner class CategoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val displayCategoryName: TextView = itemView.findViewById(R.id.display_category_name)
-        val moreBtn: TextView = itemView.findViewById(R.id.btn_more)
+    inner class CategoryViewHolder(val binding: CategoryListBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bind(category: Category) {
+            binding.displayCategoryName.text = category.categoryName.toString()
+        }
+        val btnMore = binding.btnMore
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        context = parent.context
-
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.category_list, parent, false)
-
-        return CategoryViewHolder(itemView)
+        val binding = CategoryListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CategoryViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val currentItem = categoryList[position]
 
-        holder.displayCategoryName.text = currentItem.categoryName
+        holder.bind(currentItem)
 
-        holder.moreBtn.setOnClickListener { anchorView ->
+        holder.btnMore.setOnClickListener { anchorView ->
             val inflater = anchorView.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_action_edit_delete, null)
 
@@ -73,11 +73,18 @@ class CategoryAdapter(
             }
 
             deleteBtn.setOnClickListener {
-                Toast.makeText(context, "Belum bisa dihapus ya ges ya", Toast.LENGTH_SHORT).show()
+                onItemActionListener?.onItemDeleteClicked(currentItem)
+                popupWindow.dismiss()
             }
         }
     }
 
     override fun getItemCount(): Int = categoryList.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateCategories(newCategories: List<Category>) {
+        this.categoryList = newCategories
+        notifyDataSetChanged()
+    }
 
 }

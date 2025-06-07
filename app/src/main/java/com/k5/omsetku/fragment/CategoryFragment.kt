@@ -1,21 +1,24 @@
 package com.k5.omsetku.fragment
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.ListenerRegistration
 import com.k5.omsetku.R
 import com.k5.omsetku.model.Category
 import com.k5.omsetku.adapter.CategoryAdapter
-import com.k5.omsetku.adapter.ProductAdapter
-import com.k5.omsetku.util.LoadFragment
+import com.k5.omsetku.databinding.FragmentCategoryBinding
+import com.k5.omsetku.databinding.FragmentHomeBinding
+import com.k5.omsetku.repository.CategoryRepository
+import com.k5.omsetku.utils.LoadFragment
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -28,9 +31,10 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
-    private lateinit var recyclerViewCategory: RecyclerView
     private lateinit var categoryAdapter: CategoryAdapter
-    private lateinit var categoryList: ArrayList<Category>
+    private var _binding: FragmentCategoryBinding? = null
+    private val binding get() = _binding!!
+    private val categoryRepo = CategoryRepository()
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -48,28 +52,17 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_category, container, false)
+        _binding = FragmentCategoryBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerViewCategory = view.findViewById(R.id.rv_category)
+        categoryAdapter = CategoryAdapter(emptyList(), this)
+        binding.rvCategory.adapter = categoryAdapter
 
-        categoryList = ArrayList()
-        categoryList.add(Category("accessories", "Accessories"))
-        categoryList.add(Category("laptop", "Laptop"))
-        categoryList.add(Category("smartphone", "Smartphone"))
-        categoryList.add(Category("monitor", "Monitor"))
-        categoryList.add(Category("sparepart", "Sparepart"))
-
-        categoryAdapter = CategoryAdapter(categoryList, this)
-        recyclerViewCategory.adapter = categoryAdapter
-
-        val btnAddCategory: FloatingActionButton = view.findViewById(R.id.btn_add_category)
-
-        btnAddCategory.setOnClickListener {
+        binding.btnAddCategory.setOnClickListener {
             LoadFragment.loadChildFragment(
                 parentFragmentManager,
                 R.id.host_fragment,
@@ -77,16 +70,52 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
             )
         }
 
+        loadCategories()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        loadCategories()
+    }
+
+    private fun loadCategories() {
+        lifecycleScope.launch {
+            val result = categoryRepo.getCategories()
+
+            result.onSuccess { categories ->
+                categoryAdapter.updateCategories(categories)
+            }.onFailure { e ->
+                Toast.makeText(requireContext(), "Failed to fetch categories: ${e.message}",
+                    Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
+
+    fun onCategoryUpdated() {
+        loadCategories()
     }
 
     override fun onItemEditClicked(category: Category) {
-        val editCategoryFragment = EditCategoryFragment.newInstance(category.categoryName)
+        val editCategoryFragment = EditCategoryFragment.newInstance(category)
 
         LoadFragment.loadChildFragment(
             parentFragmentManager,
             R.id.host_fragment,
             editCategoryFragment
         )
+    }
+
+    override fun onItemDeleteClicked(category: Category) {
+        lifecycleScope.launch {
+            val result = categoryRepo.deleteCategory(category.categoryId)
+            result.onSuccess {
+                loadCategories()
+            }.onFailure { e ->
+                Toast.makeText(requireContext(), "Failed to delete category: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     companion object {

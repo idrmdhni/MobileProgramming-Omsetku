@@ -5,12 +5,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.k5.omsetku.R
 import com.k5.omsetku.model.Product
 import com.k5.omsetku.adapter.ProductAdapter
-import com.k5.omsetku.util.LoadFragment
+import com.k5.omsetku.databinding.FragmentProductBinding
+import com.k5.omsetku.repository.ProductRepository
+import com.k5.omsetku.utils.LoadFragment
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,9 +28,10 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
-    private lateinit var recyclerViewProduct: RecyclerView
+    private var _binding: FragmentProductBinding? = null
+    private val binding get() = _binding!!
     private lateinit var productAdapter: ProductAdapter
-    private lateinit var productList: ArrayList<Product>
+    private val productRepo = ProductRepository()
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -43,43 +49,70 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_product, container, false)
+        _binding = FragmentProductBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerViewProduct = view.findViewById(R.id.rv_product)
+        productAdapter = ProductAdapter(emptyList(), this)
+        binding.rvProduct.adapter = productAdapter
 
-        productList = ArrayList()
-        productList.add(Product("1", "Lenovo LOQ 15", 69, 11800000, "laptop"))
-        productList.add(Product("2", "Asus TUF A15", 69, 9210000, "laptop"))
-        productList.add(Product("3", "MSI Thin 15", 69, 8820000, "laptop"))
-        productList.add(Product("4", "MacBook Air M4", 69, 16700000, "laptop"))
-        productList.add(Product("5", "Iphone 16", 69, 15000000, "smartphone"))
-        productList.add(Product("6", "Samsung S24", 69, 9060000, "smartphone"))
-        productList.add(Product("7", "Xiaomi G24i", 69, 1300000, "monitor"))
-        productList.add(Product("8", "Vortex Mono 75", 69, 312000, "accessories"))
-
-        productAdapter = ProductAdapter(productList, this)
-        recyclerViewProduct.adapter = productAdapter
-
-        val btnAddProduct: FloatingActionButton = view.findViewById(R.id.btn_add_product)
-        btnAddProduct.setOnClickListener {
+        binding.btnAddProduct.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
                 AddProductFragment())
         }
+
+        loadProducts()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        loadProducts()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun loadProducts() {
+        lifecycleScope.launch {
+            val result = productRepo.getProducts()
+
+            result.onSuccess { products ->
+                productAdapter.updateProducts(products)
+            }.onFailure { e ->
+                Toast.makeText(requireContext(), "Failed to fetch products: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun onProductUpdated() {
+        loadProducts()
     }
 
     override fun onItemEditClicked(product: Product) {
-        val editCategoryFragment = EditProductFragment.newInstance(product.productName, product.productStock.toString(), product.productPrice.toString(), "", "")
+        val editCategoryFragment = EditProductFragment.newInstance(product)
 
         LoadFragment.loadChildFragment(
             parentFragmentManager,
             R.id.host_fragment,
             editCategoryFragment
         )
+    }
+
+    override fun onItemDeleteClicked(product: Product) {
+        lifecycleScope.launch {
+            val result = productRepo.deleteProduct(product.productId)
+            result.onSuccess {
+                loadProducts()
+            }.onFailure { e ->
+                Toast.makeText(requireContext(), "Failed to delete product: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     companion object {

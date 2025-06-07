@@ -6,18 +6,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.button.MaterialButton
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.k5.omsetku.databinding.ActivityWelcomeScreenBinding
+import com.k5.omsetku.utils.FirebaseUtils
 
 class WelcomeScreenActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityWelcomeScreenBinding
+    private var _binding: ActivityWelcomeScreenBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding = ActivityWelcomeScreenBinding.inflate(layoutInflater)
+        _binding = ActivityWelcomeScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.welcome)) { v, insets ->
@@ -40,10 +39,7 @@ class WelcomeScreenActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        val auth = FirebaseAuth.getInstance()
-        val currentUser: FirebaseUser? = auth.currentUser
-
-        if (currentUser != null) {
+        if (FirebaseUtils.isUserLoggedIn()) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }

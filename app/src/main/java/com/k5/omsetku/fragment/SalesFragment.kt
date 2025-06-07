@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.k5.omsetku.R
-import com.k5.omsetku.model.Sales
+import com.k5.omsetku.model.Sale
 import com.k5.omsetku.adapter.SalesAdapter
-import com.k5.omsetku.util.LoadFragment
+import com.k5.omsetku.utils.LoadFragment
 import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
@@ -26,7 +26,7 @@ private const val ARG_PARAM2 = "param2"
 class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
     private lateinit var recyclerViewSales: RecyclerView
     private lateinit var salesAdapter: SalesAdapter
-    private lateinit var saleList: ArrayList<Sales>
+    private lateinit var saleList: ArrayList<Sale>
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -53,28 +53,21 @@ class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
 
         recyclerViewSales = view.findViewById(R.id.rv_sales)
 
-        saleList = ArrayList()
-        saleList.add(Sales("1", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("2", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("3", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("4", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("5", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
-        saleList.add(Sales("6", "Anonym", "INV-2025-04-19-001", "12 April 2025, 14:30", 12000000))
 
-        salesAdapter = SalesAdapter(saleList, this)
+        salesAdapter = SalesAdapter(emptyList(), this)
         recyclerViewSales.adapter = salesAdapter
 
         val btnAddSales: FloatingActionButton = view.findViewById(R.id.btn_add_sales)
         btnAddSales.setOnClickListener {
-            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment ,AddSalesFragment())
+            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, AddSalesFragment())
         }
     }
 
     override fun onSalesDetailsClicked(
-        sales: Sales,
+        sale: Sale,
         position: Int
     ) {
-        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment ,SalesDetailsFragment())
+        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, SalesDetailsFragment())
     }
 
 

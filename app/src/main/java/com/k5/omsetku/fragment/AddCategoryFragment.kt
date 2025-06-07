@@ -1,14 +1,19 @@
 package com.k5.omsetku.fragment
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.k5.omsetku.R
-import com.k5.omsetku.util.LoadFragment
+import com.k5.omsetku.databinding.FragmentAddCategoryBinding
+import com.k5.omsetku.databinding.FragmentCategoryBinding
+import com.k5.omsetku.repository.CategoryRepository
+import com.k5.omsetku.utils.LoadFragment
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,6 +30,10 @@ class AddCategoryFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private var _binding: FragmentAddCategoryBinding? = null
+    private val binding get() = _binding!!
+    private val categoryRepo = CategoryRepository()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -38,17 +47,41 @@ class AddCategoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_category, container, false)
+        _binding = FragmentAddCategoryBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnBackToCataegory: LinearLayout = view.findViewById(R.id.btn_back_to_category)
-
-        btnBackToCataegory.setOnClickListener {
+        binding.btnBackToCategory.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
                 CategoryFragment())
+        }
+
+        binding.btnSave.setOnClickListener {
+            val inputCategoryName = binding.inputCategoryName.text.toString().trim()
+
+            if (inputCategoryName.isEmpty()) {
+                Toast.makeText(requireContext(), "Input cannot be empty!", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                addCategory(inputCategoryName.toString())
+
+                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                    CategoryFragment())
+            }
+        }
+    }
+
+    fun addCategory (categoryName: String) {
+        lifecycleScope.launch {
+            val result = categoryRepo.addCategory(categoryName)
+            result.onSuccess {
+                (targetFragment as? CategoryFragment)?.onCategoryUpdated()
+            }.onFailure { e ->
+                Toast.makeText(requireContext(), "Failed to add new kategori: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

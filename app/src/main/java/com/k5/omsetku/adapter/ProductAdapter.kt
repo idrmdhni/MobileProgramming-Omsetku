@@ -10,49 +10,48 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.google.android.material.button.MaterialButton
 import com.k5.omsetku.R
+import com.k5.omsetku.databinding.ProductListBinding
 import com.k5.omsetku.model.Product
 import java.text.NumberFormat
 import java.util.Locale
 
 class ProductAdapter(
-    private val productList: List<Product>,
+    private var productList: List<Product>,
     private val onItemActionListener: OnItemActionListener?
 ): RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
-    private lateinit var context: Context
-
     interface OnItemActionListener {
         fun onItemEditClicked(product: Product)
+        fun onItemDeleteClicked(product: Product)
     }
 
-    inner class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val displayProductName: TextView = itemView.findViewById(R.id.display_product_name)
-        val displayProductStock: TextView = itemView.findViewById(R.id.display_product_stock)
-        val displayProductPrice: TextView = itemView.findViewById(R.id.display_product_price)
-        val moreBtn: TextView = itemView.findViewById(R.id.btn_more)
+    inner class ProductViewHolder(val binding: ProductListBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bind (product: Product) {
+            val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+
+            binding.displayProductName.text = product.productName
+            binding.displayProductStock.text = product.productStock.toString()
+            binding.displayProductPrice.text = rupiahFormat.format(product.productPrice)
+        }
+
+        val btnMore = binding.btnMore
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        context = parent.context
+        val binding = ProductListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.product_list, parent, false)
-
-        return ProductViewHolder(itemView)
+        return ProductViewHolder(binding)
     }
 
-    @SuppressLint("CutPasteId")
+    @SuppressLint("CutPasteId", "InflateParams")
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val currentItem = productList[position]
 
-        val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+        holder.bind(currentItem)
 
-        holder.displayProductName.text = currentItem.productName
-        holder.displayProductStock.text = currentItem.productStock.toString()
-        holder.displayProductPrice.text = rupiahFormat.format(currentItem.productPrice)
-
-        holder.moreBtn.setOnClickListener { anchorView ->
+        holder.btnMore.setOnClickListener { anchorView ->
             val inflater = anchorView.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.popup_action_edit_delete, null)
 
@@ -81,12 +80,19 @@ class ProductAdapter(
                 popupWindow.dismiss()
             }
             deleteBtn.setOnClickListener {
-                Toast.makeText(context, "Belum bisa dihapus ya ges ya", Toast.LENGTH_SHORT).show()
+                onItemActionListener?.onItemDeleteClicked(currentItem)
+                popupWindow.dismiss()
             }
         }
 
     }
 
     override fun getItemCount() = productList.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateProducts(newProduct: List<Product>) {
+        this.productList = newProduct
+        notifyDataSetChanged()
+    }
 
 }

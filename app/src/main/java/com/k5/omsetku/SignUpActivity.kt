@@ -14,21 +14,23 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.k5.omsetku.databinding.ActivitySignUpBinding
+import com.k5.omsetku.utils.FirebaseUtils
 
 class SignUpActivity : AppCompatActivity() {
+    private var _binding: ActivitySignUpBinding? = null
+    private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
-    private lateinit var binding: ActivitySignUpBinding
     private lateinit var db: FirebaseFirestore
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding = ActivitySignUpBinding.inflate(layoutInflater)
+        _binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+        auth = FirebaseUtils.auth
+        db = FirebaseUtils.db
 
         window.statusBarColor = "#205072".toColorInt()
         window.navigationBarColor = "#205072".toColorInt()
@@ -78,23 +80,20 @@ class SignUpActivity : AppCompatActivity() {
                                 "email" to inputEmail
                             )
 
-                        db.collection("users").document(userUid)
-                            .set(userData)
-                            .addOnSuccessListener {
-                                Log.d("Register", "User profile telah ditembahkan ke Firestore dengan UID: $userUid")
-                                Toast.makeText(this, "Akun telah berhasil dibuat!", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, LogInActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                        }
-                            .addOnFailureListener { e ->
-                                Log.w("Register", "Gagal menambahkan user profile ke Firestore dengan UID: $userUid", e)
-                                Toast.makeText(this, "Registrasi berhasil, namun ada kesalahan dengan keterangan ${e.message}!", Toast.LENGTH_SHORT).show()
-                                firebaseUser.delete()
-                            }
+                            db.collection("users").document(userUid)
+                                .set(userData)
+                                .addOnSuccessListener {
+                                    Toast.makeText(this, "Akun telah berhasil dibuat!", Toast.LENGTH_SHORT).show()
+                                    val intent = Intent(this, LogInActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(this, "Registrasi berhasil, namun ada kesalahan dengan keterangan ${e.message}!", Toast.LENGTH_SHORT).show()
+                                    firebaseUser.delete()
+                                }
                         }
                     } else {
-                        Log.w("Register", "Gagal menjalankan createUserWithEmailAndPassword", task.exception)
                         Toast.makeText(this, "Registrasi gagal!: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
                 }

@@ -34,12 +34,11 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private var _binding: FragmentHomeBinding? = null
     private var userProfileListener: ListenerRegistration? = null
-
-    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,8 +96,7 @@ class HomeFragment : Fragment() {
             userProfileListener = db.collection("users").document(userUid)
                 .addSnapshotListener { documentSnapshot, e ->
                     if (e != null) {
-                        Log.w("HomeFragment", "Listen failed.", e)
-                        Toast.makeText(requireContext(), "Gagal memuat profil: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Failed to load profile: ${e.message}", Toast.LENGTH_SHORT).show()
                         return@addSnapshotListener
                     }
 
@@ -106,10 +104,8 @@ class HomeFragment : Fragment() {
                         val name = documentSnapshot.getString("name")
                         val email = documentSnapshot.getString("email")
                         binding.accountName.text = name ?: email
-                        Log.d("HomeFragment", "User data updated: Name=${name}, Email=${email}")
                     } else {
-                        binding.accountName.text = "Selamat Datang!"
-                        Log.d("HomeFragment", "Dokumen profil user tidak ditemukan atau sudah dihapus.")
+                        binding.accountName.text = "Anonym!"
                     }
                 }
         } else {
@@ -123,7 +119,6 @@ class HomeFragment : Fragment() {
     private fun removeFirestoreListeners() {
         userProfileListener?.remove() // Hentikan listener profil
         userProfileListener = null
-        Log.d("HomeFragment", "Firestore listeners removed.")
     }
 
     companion object {

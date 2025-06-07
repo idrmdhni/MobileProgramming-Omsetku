@@ -7,16 +7,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
-import com.k5.omsetku.model.Sales
+import com.k5.omsetku.model.Sale
 import java.text.NumberFormat
 import java.util.Locale
 
 class SalesAdapter(
-    private val saleList: List<Sales>,
+    private val saleList: List<Sale>,
     private val onItemActionListener: OnItemActionListener?
 ): RecyclerView.Adapter<SalesAdapter.SalesViewHolder>() {
     interface OnItemActionListener {
-        fun onSalesDetailsClicked(sales: Sales, position: Int)
+        fun onSalesDetailsClicked(sale: Sale, position: Int)
     }
 
     inner class SalesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -40,7 +40,7 @@ class SalesAdapter(
         val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
 
         holder.displayInvoiceNumber.text = currentItem.invoiceNumber
-        holder.displayPurchaseDate.text = currentItem.purchaseDate
+        holder.displayPurchaseDate.text = currentItem.purchaseDate.toString()
         holder.displayTotalPurchase.text = rupiahFormat.format(currentItem.totalPurchase)
 
         holder.btnDetails.setOnClickListener {

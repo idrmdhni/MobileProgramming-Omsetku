@@ -9,8 +9,17 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.k5.omsetku.R
-import com.k5.omsetku.util.LoadFragment
+import com.k5.omsetku.databinding.FragmentEditProductBinding
+import com.k5.omsetku.model.Category
+import com.k5.omsetku.model.Product
+import com.k5.omsetku.repository.CategoryRepository
+import com.k5.omsetku.repository.ProductRepository
+import com.k5.omsetku.utils.FirebaseUtils
+import com.k5.omsetku.utils.LoadFragment
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,11 +32,13 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class EditProductFragment : Fragment() {
-    private var productName: String? = ""
-    private var productStock: String? = ""
-    private var productPrice: String? = ""
-    private var productDescription: String? = ""
-    private var productCategory: String? = ""
+    private var _binding: FragmentEditProductBinding? = null
+    private val binding get() = _binding!!
+    private var product: Product? = null
+    private val productRepo = ProductRepository()
+    private val categoryRepo = CategoryRepository()
+    private val dropdownItem = mutableListOf<Category>()
+    private lateinit var categoryId: String
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -36,11 +47,7 @@ class EditProductFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let { bundle ->
-            productName = bundle.getString(ARG_PRODUCT_NAME)
-            productStock = bundle.getString(ARG_PRODUCT_STOCK)
-            productPrice = bundle.getString(ARG_PRODUCT_PRICE)
-            productDescription = bundle.getString(ARG_PRODUCT_DESCRIPTION)
-            productCategory = bundle.getString(ARG_PRODUCT_CATEGORY)
+            product = bundle.getParcelable(ARG_PRODUCT)
         }
     }
 
@@ -49,56 +56,89 @@ class EditProductFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_product, container, false)
+        _binding = FragmentEditProductBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnBackToProduct: LinearLayout = view.findViewById(R.id.btn_back_to_product)
-        btnBackToProduct.setOnClickListener {
+        binding.btnBackToProduct.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
                 ProductFragment())
         }
 
-        val inputProductName: EditText = view.findViewById(R.id.input_product_name)
-        val inputStock: EditText = view.findViewById(R.id.input_stock)
-        val inputPrice: EditText = view.findViewById(R.id.input_price)
-        val inputDescription: EditText = view.findViewById(R.id.input_description)
-        val dropdownCategory: AutoCompleteTextView = view.findViewById(R.id.dropdown_category)
-        inputProductName.setText(productName)
-        inputStock.setText(productStock)
-        inputPrice.setText(productPrice)
-        inputDescription.setText(productDescription)
-        dropdownCategory.setText(productCategory)
+        binding.inputProductName.setText(product?.productName)
+        binding.inputStock.setText(product?.productStock.toString())
+        binding.inputPrice.setText(product?.productPrice.toString())
+        binding.inputDescription.setText(product?.productDescription)
+        binding.dropdownCategory.setText(product?.categoryId)
 
-        val items = listOf("Item 1", "Item 2", "Item3")
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
-        dropdownCategory.setAdapter(adapter)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, dropdownItem)
+        binding.dropdownCategory.setAdapter(adapter)
 
-        dropdownCategory.setOnItemClickListener { parent, view, position, id ->
-            val selectedItem = parent.getItemAtPosition(position).toString()
-            dropdownCategory.setText(selectedItem)
+        getCategory()
+
+        binding.dropdownCategory.setOnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position) as Category
+            categoryId = selectedItem.categoryId
+        }
+
+        binding.btnSave.setOnClickListener {
+            val inputProductName = binding.inputProductName.text.toString().trim()
+            val inputStock = binding.inputStock.text.toString().toIntOrNull()
+            val inputPrice = binding.inputPrice.text.toString().toLongOrNull()
+            val inputDescription = binding.inputDescription.text.toString().trim()
+            val dropdownCategory = binding.dropdownCategory.text.toString().trim()
+
+            if (inputProductName.isEmpty() || dropdownCategory.isEmpty()) {
+                Toast.makeText(requireContext(), "Input cannot be empty!", Toast.LENGTH_SHORT).show()
+            } else {
+                if (inputStock == null || inputPrice == null) {
+                    Toast.makeText(requireContext(), "Stock or price must be number!", Toast.LENGTH_SHORT).show()
+                } else {
+                    updateProduct(product?.productId.toString(), inputProductName, inputStock, inputPrice, inputDescription, dropdownCategory)
+
+                    LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                        ProductFragment())
+                }
+            }
+        }
+    }
+
+    fun updateProduct(productId: String, productName: String, productStock: Int, productPrice: Long, productDesc: String, categoryId: String) {
+        lifecycleScope.launch {
+            val result = productRepo.updateProduct(productId, productName, productStock, productPrice, productDesc, categoryId)
+            result.onSuccess {
+                (targetFragment as? ProductFragment)?.onProductUpdated()
+            }.onFailure { e ->
+                Toast.makeText(requireContext(), "Failed to update prouduct: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun getCategory() {
+        lifecycleScope.launch {
+            val result = categoryRepo.getCategories()
+            result.onSuccess { categories ->
+                for (category in categories) {
+                    dropdownItem.add(category)
+                }
+            }.onFailure { e ->
+                Toast.makeText(requireContext(), "Failed to fetch categories: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     companion object {
-        private const val ARG_PRODUCT_NAME = "product_name"
-        private const val ARG_PRODUCT_STOCK = "product_stock"
-        private const val ARG_PRODUCT_PRICE = "product_price"
-        private const val ARG_PRODUCT_DESCRIPTION = "product_desc"
-        private const val ARG_PRODUCT_CATEGORY = "product_category"
+        private const val ARG_PRODUCT = "product"
 
         @JvmStatic
-        fun newInstance(productName: String, productStock: String, productPrice: String, productCategory: String, productDescription: String): EditProductFragment {
+        fun newInstance(product: Product): EditProductFragment {
             val fragment = EditProductFragment()
             val args = Bundle()
 
-            args.putString(ARG_PRODUCT_NAME, productName)
-            args.putString(ARG_PRODUCT_STOCK, productStock)
-            args.putString(ARG_PRODUCT_PRICE, productPrice)
-            args.putString(ARG_PRODUCT_DESCRIPTION, productDescription)
-            args.putString(ARG_PRODUCT_CATEGORY, productCategory)
+            args.putParcelable(ARG_PRODUCT, product)
 
             fragment.arguments = args
             return fragment

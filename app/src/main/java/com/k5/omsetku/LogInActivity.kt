@@ -10,19 +10,21 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.graphics.toColorInt
 import com.google.firebase.auth.FirebaseAuth
 import com.k5.omsetku.databinding.ActivityLogInBinding
+import com.k5.omsetku.utils.FirebaseUtils
 
 class LogInActivity : AppCompatActivity() {
+    private var _binding: ActivityLogInBinding? = null
+    private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
-    private lateinit var binding: ActivityLogInBinding
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding = ActivityLogInBinding.inflate(layoutInflater)
+        _binding = ActivityLogInBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        auth = FirebaseAuth.getInstance()
+        auth = FirebaseUtils.auth
 
         window.statusBarColor = "#205072".toColorInt()
         window.navigationBarColor = "#205072".toColorInt()

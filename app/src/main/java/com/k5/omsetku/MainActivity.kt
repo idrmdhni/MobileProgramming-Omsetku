@@ -1,9 +1,6 @@
 package com.k5.omsetku
 
-import android.annotation.SuppressLint
-import androidx.fragment.app.Fragment
 import android.os.Bundle
-import android.widget.FrameLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -14,11 +11,9 @@ import com.k5.omsetku.fragment.HomeFragment
 import com.k5.omsetku.fragment.ProductFragment
 import com.k5.omsetku.fragment.SalesFragment
 import androidx.core.graphics.toColorInt
-import com.k5.omsetku.util.LoadFragment
+import com.k5.omsetku.utils.LoadFragment
 
 class MainActivity : AppCompatActivity() {
-    private val fragHost: Int = R.id.host_fragment
-
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
