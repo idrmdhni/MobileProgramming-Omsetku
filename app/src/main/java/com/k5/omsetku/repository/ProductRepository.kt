@@ -8,35 +8,42 @@ import com.k5.omsetku.utils.FirebaseUtils
 import kotlinx.coroutines.tasks.await
 
 class ProductRepository {
+    private val categoryRepo = CategoryRepository()
+
     private fun getProductCollection(uid: String): CollectionReference {
         return FirebaseUtils.db.collection("users")
             .document(uid)
             .collection("products")
     }
 
-    suspend fun addProduct(name: String, stock: Int, price: Long, desc: String, catId: String): Result<Product> {
+    // CREATE
+    suspend fun addProduct(product: Product): Result<Product> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
-        val newProduct = Product(productName = name, productStock = stock, productPrice = price, productDescription = desc, categoryId = catId)
-
         return try {
-            val documentRef = getProductCollection(uid).add(newProduct).await()
-            newProduct.productId = documentRef.id
-            Result.success(newProduct)
+            val categoryResult = categoryRepo.getCategoryById(product.categoryId)
+            if (categoryResult.isFailure) {
+                return Result.failure(categoryResult.exceptionOrNull() ?: Exception("Category not found or validation error!"))
+            }
+
+            val documentRef = getProductCollection(uid).add(product).await()
+            product.productId = documentRef.id
+            Result.success(product)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
+    // READ
     suspend fun getProducts(): Result<List<Product>> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
         return try {
@@ -50,11 +57,12 @@ class ProductRepository {
         }
     }
 
+    // READ (Mendapatkan satu data berdasarkan ID)
     suspend fun getProductById(id: String): Result<Product> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
         return try {
@@ -65,45 +73,42 @@ class ProductRepository {
                 if (document != null) {
                     Result.success(document)
                 } else {
-                    Result.failure(NoSuchElementException("Gagal mengonversi produk"))
+                    Result.failure(NoSuchElementException("Failed to convert product!"))
                 }
             } else {
-                Result.failure(NoSuchElementException("Produk tidak ditemukan"))
+                Result.failure(NoSuchElementException("Product not found!"))
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun updateProduct(id: String, newName: String, newStock: Int, newPrice: Long, newDesc: String, newCatId: String): Result<Unit> {
+    // UPDATE
+    suspend fun updateProduct(productId: String, updatedProduct: Map<String, Any>): Result<Unit> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
         return try {
-            val documentRef = getProductCollection(uid).document(id)
-            documentRef.update("productName", newName).await()
-            documentRef.update("productStock", newStock).await()
-            documentRef.update("productPrice", newPrice).await()
-            documentRef.update("productDescription", newDesc).await()
-            documentRef.update("categoryId", newCatId).await()
+            getProductCollection(uid).document(productId).update(updatedProduct).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun deleteProduct(id: String): Result<Unit> {
+    // DELETE
+    suspend fun deleteProduct(productId: String): Result<Unit> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
         return try {
-            getProductCollection(uid).document(id).delete().await()
+            getProductCollection(uid).document(productId).delete().await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

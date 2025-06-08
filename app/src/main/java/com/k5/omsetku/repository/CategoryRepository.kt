@@ -12,14 +12,15 @@ class CategoryRepository {
             .collection("categories")
     }
 
-    suspend fun addCategory(name: String): Result<Category> {
+    // CREATE
+    suspend fun addCategory(categoryName: String): Result<Category> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login!"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
-        val newCategory = Category(categoryName = name)
+        val newCategory = Category(categoryName = categoryName)
 
         return try {
             val documentReference = getCategoriesCollection(uid).add(newCategory).await()
@@ -30,11 +31,12 @@ class CategoryRepository {
         }
     }
 
+    // READ
     suspend fun getCategories(): Result<List<Category>> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login!"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
         return try {
@@ -48,39 +50,41 @@ class CategoryRepository {
         }
     }
 
-    suspend fun getCategoryById(id: String): Result<Category> {
+    // READ (Mendapatkan satu data berdasarkan ID)
+    suspend fun getCategoryById(categoryId: String): Result<Category> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login!"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
         return try {
-            val documentSnapshot = getCategoriesCollection(uid).document(id).get().await()
+            val documentSnapshot = getCategoriesCollection(uid).document(categoryId).get().await()
             if (documentSnapshot.exists()) {
                 val category = documentSnapshot.toObject(Category::class.java)?.apply { this.categoryId = documentSnapshot.id }
                 if (category != null) {
                     Result.success(category)
                 } else {
-                    Result.failure(NoSuchElementException("Gagal mengonversi kategori"))
+                    Result.failure(NoSuchElementException("Failed to convert category!"))
                 }
             } else {
-                Result.failure(NoSuchElementException("Kategori tidak ditemukan!"))
+                Result.failure(NoSuchElementException("Category not found!"))
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun updateCategory(id: String, newName: String): Result<Unit> {
+    // UPDATE
+    suspend fun updateCategory(categoryId: String, newName: String): Result<Unit> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login!"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
         return try {
-            val categoryRef = getCategoriesCollection(uid).document(id)
+            val categoryRef = getCategoriesCollection(uid).document(categoryId)
             categoryRef.update("categoryName", newName).await()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -88,7 +92,8 @@ class CategoryRepository {
         }
     }
 
-    suspend fun deleteCategory(id: String): Result<Unit> {
+    // DELETE
+    suspend fun deleteCategory(categoryId: String): Result<Unit> {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
@@ -96,7 +101,7 @@ class CategoryRepository {
         }
 
         return try {
-            getCategoriesCollection(uid).document(id).delete().await()
+            getCategoriesCollection(uid).document(categoryId).delete().await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

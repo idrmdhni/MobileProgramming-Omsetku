@@ -90,16 +90,23 @@ class AddProductFragment : Fragment() {
                 if (inputStock == null || inputPrice == null) {
                     Toast.makeText(requireContext(), "Stock or price must be number!", Toast.LENGTH_SHORT).show()
                 } else {
-                    addProduct(inputProductName, inputStock, inputPrice, inputDescription, categoryId)
+                    val product = Product(
+                        productName = inputProductName,
+                        productStock = inputStock,
+                        productPrice = inputPrice,
+                        productDescription = inputDescription,
+                        categoryId = categoryId
+                    )
+                    addProduct(product)
                 }
             }
         }
 
     }
 
-    fun addProduct(productName: String, productStock: Int, productPrice: Long, productDesc: String, categoryId: String) {
+    fun addProduct(product: Product) {
         lifecycleScope.launch {
-            val result = productRepo.addProduct(productName, productStock, productPrice, productDesc, categoryId)
+            val result = productRepo.addProduct(product)
             result.onSuccess {
                 (targetFragment as? ProductFragment)?.onProductUpdated()
 

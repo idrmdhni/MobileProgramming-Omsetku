@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +21,8 @@ import com.k5.omsetku.databinding.FragmentCategoryBinding
 import com.k5.omsetku.databinding.FragmentHomeBinding
 import com.k5.omsetku.repository.CategoryRepository
 import com.k5.omsetku.utils.LoadFragment
+import com.k5.omsetku.utils.LoadState
+import com.k5.omsetku.viewmodel.CategoryViewModel
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
@@ -34,7 +39,8 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
     private lateinit var categoryAdapter: CategoryAdapter
     private var _binding: FragmentCategoryBinding? = null
     private val binding get() = _binding!!
-    private val categoryRepo = CategoryRepository()
+
+    private lateinit var categoryViewModel: CategoryViewModel
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -46,6 +52,10 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+        // Inisialisasi ViewModel di onCreate()
+        // Ini memastikan ViewModel dipertahankan sepanjang siklus hidup Fragment
+        categoryViewModel = ViewModelProvider(this).get(CategoryViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -62,6 +72,34 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
         categoryAdapter = CategoryAdapter(emptyList(), this)
         binding.rvCategory.adapter = categoryAdapter
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            categoryViewModel.refreshCategories()
+        }
+
+        categoryViewModel.categories.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (!binding.swipeRefreshLayout.isRefreshing) {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.rvCategory.visibility = View.GONE
+                    }
+                }
+                is LoadState.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvCategory.visibility = View.VISIBLE
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    categoryAdapter.updateCategories(loadState.data)
+                }
+                is LoadState.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvCategory.visibility = View.GONE
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(requireContext(), "Failed to fetch categories: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
         binding.btnAddCategory.setOnClickListener {
             LoadFragment.loadChildFragment(
                 parentFragmentManager,
@@ -69,32 +107,6 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
                 AddCategoryFragment()
             )
         }
-
-        loadCategories()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        loadCategories()
-    }
-
-    private fun loadCategories() {
-        lifecycleScope.launch {
-            val result = categoryRepo.getCategories()
-
-            result.onSuccess { categories ->
-                categoryAdapter.updateCategories(categories)
-            }.onFailure { e ->
-                Toast.makeText(requireContext(), "Failed to fetch categories: ${e.message}",
-                    Toast.LENGTH_SHORT).show()
-            }
-
-        }
-    }
-
-    fun onCategoryUpdated() {
-        loadCategories()
     }
 
     override fun onItemEditClicked(category: Category) {
@@ -109,9 +121,10 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
 
     override fun onItemDeleteClicked(category: Category) {
         lifecycleScope.launch {
-            val result = categoryRepo.deleteCategory(category.categoryId)
+            val result = CategoryViewModel().deleteCategory(category.categoryId)
+
             result.onSuccess {
-                loadCategories()
+                Toast.makeText(requireContext(), "Category deleted successfully", Toast.LENGTH_SHORT).show()
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to delete category: ${e.message}", Toast.LENGTH_SHORT).show()
             }

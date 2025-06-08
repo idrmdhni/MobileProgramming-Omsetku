@@ -97,15 +97,22 @@ class EditProductFragment : Fragment() {
                 if (inputStock == null || inputPrice == null) {
                     Toast.makeText(requireContext(), "Stock or price must be number!", Toast.LENGTH_SHORT).show()
                 } else {
-                    updateProduct(product?.productId.toString(), inputProductName, inputStock, inputPrice, inputDescription, categoryId)
+                    val updatedProduct = mutableMapOf<String, Any>()
+                    if (inputProductName != product?.productName) updatedProduct["productName"] = inputProductName
+                    if (inputStock != product?.productStock) updatedProduct["productStock"] = inputStock
+                    if (inputPrice != product?.productPrice) updatedProduct["productPrice"] = inputPrice
+                    if (inputDescription != product?.productDescription) updatedProduct["productDescription"] = inputDescription
+                    if (categoryId != product?.categoryId) updatedProduct["categoryId"] = categoryId
+
+                    updateProduct(product?.productId.toString(), updatedProduct)
                 }
             }
         }
     }
 
-    fun updateProduct(productId: String, productName: String, productStock: Int, productPrice: Long, productDesc: String, categoryId: String) {
+    fun updateProduct(productId: String, newProduct: Map<String, Any>) {
         lifecycleScope.launch {
-            val result = productRepo.updateProduct(productId, productName, productStock, productPrice, productDesc, categoryId)
+            val result = productRepo.updateProduct(productId, newProduct)
             result.onSuccess {
                 (targetFragment as? ProductFragment)?.onProductUpdated()
                 LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,

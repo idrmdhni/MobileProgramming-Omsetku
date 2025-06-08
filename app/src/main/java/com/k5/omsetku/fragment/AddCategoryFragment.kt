@@ -13,6 +13,7 @@ import com.k5.omsetku.databinding.FragmentAddCategoryBinding
 import com.k5.omsetku.databinding.FragmentCategoryBinding
 import com.k5.omsetku.repository.CategoryRepository
 import com.k5.omsetku.utils.LoadFragment
+import com.k5.omsetku.viewmodel.CategoryViewModel
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
@@ -66,21 +67,17 @@ class AddCategoryFragment : Fragment() {
                 Toast.makeText(requireContext(), "Input cannot be empty!", Toast.LENGTH_SHORT)
                     .show()
             } else {
-                addCategory(inputCategoryName.toString())
-            }
-        }
-    }
+                lifecycleScope.launch {
+                    val result = CategoryViewModel().deleteCategory(inputCategoryName.toString())
+                    result.onSuccess {
+                        Toast.makeText(requireContext(), "Category has been successfully added", Toast.LENGTH_SHORT).show()
 
-    fun addCategory (categoryName: String) {
-        lifecycleScope.launch {
-            val result = categoryRepo.addCategory(categoryName)
-            result.onSuccess {
-                (targetFragment as? CategoryFragment)?.onCategoryUpdated()
-
-                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                    CategoryFragment())
-            }.onFailure { e ->
-                Toast.makeText(requireContext(), "Failed to add new kategori: ${e.message}", Toast.LENGTH_SHORT).show()
+                        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                            CategoryFragment())
+                    }.onFailure { e ->
+                        Toast.makeText(requireContext(), "Failed to add new kategori: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

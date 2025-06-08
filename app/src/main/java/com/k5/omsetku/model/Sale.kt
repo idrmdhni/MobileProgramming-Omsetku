@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp as Timestamp
 
 data class Sale(
     @DocumentId
-    var invoiceNumberId: String = "",
+    var saleId: String = "",
     val buyersName: String = "",
     val invoiceNumber: String = "",
     val purchaseDate: Timestamp = Timestamp.now(),
