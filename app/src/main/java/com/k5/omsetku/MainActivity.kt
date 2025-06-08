@@ -11,15 +11,13 @@ import com.k5.omsetku.fragment.HomeFragment
 import com.k5.omsetku.fragment.ProductFragment
 import com.k5.omsetku.fragment.SalesFragment
 import androidx.core.graphics.toColorInt
-import androidx.fragment.app.Fragment
+import com.k5.omsetku.utils.LoadFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var homeFragment: HomeFragment
     private lateinit var categoryFragment: CategoryFragment
     private lateinit var productFragment: ProductFragment
     private lateinit var salesFragment: SalesFragment
-
-    private var activeFragment: Fragment? = null
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,42 +40,25 @@ class MainActivity : AppCompatActivity() {
         productFragment = ProductFragment()
         salesFragment = SalesFragment()
 
-        // Tambahkan semua fragment ke FragmentManager tapi sembunyikan semuanya kecuali yang pertama
-        supportFragmentManager.beginTransaction()
-            .add(R.id.host_fragment, homeFragment, "home")
-            .add(R.id.host_fragment, categoryFragment, "category").hide(categoryFragment)
-            .add(R.id.host_fragment, productFragment, "product").hide(productFragment)
-            .add(R.id.host_fragment, salesFragment, "sales").hide(salesFragment)
-            .commit()
+        LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, HomeFragment())
 
-        activeFragment = homeFragment // Set fragment awal sebagai aktif
-
-        // ... kode BottomNavigationView ...
         val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    switchFragment(homeFragment)
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, homeFragment)
                 }
                 R.id.nav_category -> {
-                    switchFragment(categoryFragment)
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, categoryFragment)
                 }
                 R.id.nav_product -> {
-                    switchFragment(productFragment)
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, productFragment)
                 }
                 R.id.nav_sales -> {
-                    switchFragment(salesFragment)
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, salesFragment)
                 }
             }
             true
         }
-    }
-
-    private fun switchFragment(targetFragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        activeFragment?.let { transaction.hide(it) } // Sembunyikan fragment yang sedang aktif
-        transaction.show(targetFragment) // Tampilkan fragment target
-        transaction.commit()
-        activeFragment = targetFragment // Update fragment yang sedang aktif
     }
 }

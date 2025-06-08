@@ -5,42 +5,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.k5.omsetku.R
 import com.k5.omsetku.databinding.FragmentAddCategoryBinding
-import com.k5.omsetku.databinding.FragmentCategoryBinding
-import com.k5.omsetku.repository.CategoryRepository
-import com.k5.omsetku.utils.LoadFragment
 import com.k5.omsetku.viewmodel.CategoryViewModel
 import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AddCategoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddCategoryFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+    private lateinit var categoryViewModel: CategoryViewModel
     private var _binding: FragmentAddCategoryBinding? = null
     private val binding get() = _binding!!
-    private val categoryRepo = CategoryRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+        categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -56,8 +36,7 @@ class AddCategoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnBackToCategory.setOnClickListener {
-            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                CategoryFragment())
+            parentFragmentManager.popBackStack()
         }
 
         binding.btnSave.setOnClickListener {
@@ -68,37 +47,17 @@ class AddCategoryFragment : Fragment() {
                     .show()
             } else {
                 lifecycleScope.launch {
-                    val result = CategoryViewModel().deleteCategory(inputCategoryName.toString())
+                    val result = categoryViewModel.addCategory(inputCategoryName.toString())
                     result.onSuccess {
                         Toast.makeText(requireContext(), "Category has been successfully added", Toast.LENGTH_SHORT).show()
 
-                        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                            CategoryFragment())
+                        parentFragmentManager.setFragmentResult("category_update_request", Bundle.EMPTY)
+                        parentFragmentManager.popBackStack()
                     }.onFailure { e ->
-                        Toast.makeText(requireContext(), "Failed to add new kategori: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Failed to add category: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddCategoryFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddCategoryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

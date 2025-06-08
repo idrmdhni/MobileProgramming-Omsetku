@@ -6,43 +6,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.k5.omsetku.R
 import com.k5.omsetku.model.Product
 import com.k5.omsetku.adapter.ProductAdapter
 import com.k5.omsetku.databinding.FragmentProductBinding
-import com.k5.omsetku.repository.ProductRepository
 import com.k5.omsetku.utils.LoadFragment
+import com.k5.omsetku.utils.LoadState
+import com.k5.omsetku.viewmodel.ProductViewModel
 import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProductFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
     private var _binding: FragmentProductBinding? = null
     private val binding get() = _binding!!
     private lateinit var productAdapter: ProductAdapter
-    private val productRepo = ProductRepository()
-
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var productViewModel: ProductViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+        productViewModel = ViewModelProvider(this)[ProductViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -59,39 +45,49 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
         productAdapter = ProductAdapter(emptyList(), this)
         binding.rvProduct.adapter = productAdapter
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            productViewModel.refreshProducts()
+        }
+
+        productViewModel.products.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (!binding.swipeRefreshLayout.isRefreshing) {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.rvProduct.visibility = View.GONE
+                    }
+                }
+                is LoadState.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvProduct.visibility = View.VISIBLE
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    productAdapter.updateProducts(loadState.data)
+                }
+                is LoadState.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvProduct.visibility = View.GONE
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(requireContext(), "Failed to fetch products: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        setFragmentResultListener("category_update_request") { requestKey, bundle ->
+            if (requestKey == "category_update_request") {
+                productViewModel.refreshProducts()
+            }
+        }
+
         binding.btnAddProduct.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
                 AddProductFragment())
         }
-
-        loadProducts()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        loadProducts()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun loadProducts() {
-        lifecycleScope.launch {
-            val result = productRepo.getProducts()
-
-            result.onSuccess { products ->
-                productAdapter.updateProducts(products)
-            }.onFailure { e ->
-                Toast.makeText(requireContext(), "Failed to fetch products: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    fun onProductUpdated() {
-        loadProducts()
     }
 
     override fun onItemEditClicked(product: Product) {
@@ -106,32 +102,13 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
 
     override fun onItemDeleteClicked(product: Product) {
         lifecycleScope.launch {
-            val result = productRepo.deleteProduct(product.productId)
+            val result = ProductViewModel().deleteProduct(product.productId)
+
             result.onSuccess {
-                loadProducts()
+                Toast.makeText(requireContext(), "Product deleted successfully", Toast.LENGTH_SHORT).show()
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to delete product: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProductFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProductFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

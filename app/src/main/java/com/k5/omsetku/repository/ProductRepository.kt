@@ -1,8 +1,6 @@
 package com.k5.omsetku.repository
 
-import android.widget.Toast
 import com.google.firebase.firestore.CollectionReference
-import com.k5.omsetku.model.Category
 import com.k5.omsetku.model.Product
 import com.k5.omsetku.utils.FirebaseUtils
 import kotlinx.coroutines.tasks.await

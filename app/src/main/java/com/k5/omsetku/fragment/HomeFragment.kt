@@ -10,6 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat.finishAffinity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -17,6 +20,7 @@ import com.k5.omsetku.LogInActivity
 import com.k5.omsetku.R
 import com.k5.omsetku.databinding.FragmentEditProductBinding
 import com.k5.omsetku.databinding.FragmentHomeBinding
+import com.k5.omsetku.utils.LoadFragment
 import kotlin.jvm.java
 
 // TODO: Rename parameter arguments, choose names that match
@@ -60,12 +64,23 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitConfirmationDialog()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
         val account: ImageView = binding.account
 
-        account.setOnClickListener { loadFragment(AccountFragment()) }
+        account.setOnClickListener { LoadFragment.loadChildFragment(
+            parentFragmentManager,
+            R.id.host_fragment,
+            AccountFragment()
+        ) }
 
     }
 
@@ -121,6 +136,20 @@ class HomeFragment : Fragment() {
         userProfileListener = null
     }
 
+    private fun showExitConfirmationDialog() {
+        AlertDialog.Builder(requireContext()) // Menggunakan requireContext() untuk mendapatkan Context
+            .setTitle("Exit Confirmation")
+            .setMessage("Are you sure want to exit the application?")
+            .setPositiveButton("Yes") { dialog, which ->
+                // Tutup semua Activity dan keluar dari aplikasi
+                activity?.finishAffinity()
+            }
+            .setNegativeButton("No") { dialog, which ->
+                dialog.dismiss() // Tutup dialog
+            }
+            .show()
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -139,12 +168,5 @@ class HomeFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
-    }
-
-    @SuppressLint("CommitTransaction")
-    private fun loadFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.host_fragment, fragment)
-            .commit()
     }
 }

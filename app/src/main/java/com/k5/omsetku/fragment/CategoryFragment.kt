@@ -6,56 +6,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.LifecycleOwner
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.ListenerRegistration
 import com.k5.omsetku.R
 import com.k5.omsetku.model.Category
 import com.k5.omsetku.adapter.CategoryAdapter
 import com.k5.omsetku.databinding.FragmentCategoryBinding
-import com.k5.omsetku.databinding.FragmentHomeBinding
-import com.k5.omsetku.repository.CategoryRepository
 import com.k5.omsetku.utils.LoadFragment
 import com.k5.omsetku.utils.LoadState
 import com.k5.omsetku.viewmodel.CategoryViewModel
 import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CategoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
+    private lateinit var categoryViewModel: CategoryViewModel
     private lateinit var categoryAdapter: CategoryAdapter
     private var _binding: FragmentCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var categoryViewModel: CategoryViewModel
-
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
 
         // Inisialisasi ViewModel di onCreate()
         // Ini memastikan ViewModel dipertahankan sepanjang siklus hidup Fragment
-        categoryViewModel = ViewModelProvider(this).get(CategoryViewModel::class.java)
+        categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -100,6 +75,13 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
             }
         })
 
+        setFragmentResultListener("category_update_request") { requestKey, bundle ->
+            if (requestKey == "category_update_request") {
+                // Ketika sinyal diterima, paksa refresh data
+                categoryViewModel.refreshCategories()
+            }
+        }
+
         binding.btnAddCategory.setOnClickListener {
             LoadFragment.loadChildFragment(
                 parentFragmentManager,
@@ -121,7 +103,7 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
 
     override fun onItemDeleteClicked(category: Category) {
         lifecycleScope.launch {
-            val result = CategoryViewModel().deleteCategory(category.categoryId)
+            val result = categoryViewModel.deleteCategory(category.categoryId)
 
             result.onSuccess {
                 Toast.makeText(requireContext(), "Category deleted successfully", Toast.LENGTH_SHORT).show()
@@ -129,25 +111,5 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
                 Toast.makeText(requireContext(), "Failed to delete category: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CategoryFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CategoryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

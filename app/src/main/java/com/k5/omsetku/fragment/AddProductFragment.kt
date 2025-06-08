@@ -6,49 +6,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
-import com.k5.omsetku.R
 import com.k5.omsetku.databinding.FragmentAddProductBinding
-import com.k5.omsetku.databinding.FragmentEditProductBinding
 import com.k5.omsetku.model.Category
 import com.k5.omsetku.model.Product
-import com.k5.omsetku.repository.CategoryRepository
-import com.k5.omsetku.repository.ProductRepository
-import com.k5.omsetku.utils.LoadFragment
+import com.k5.omsetku.utils.LoadState
+import com.k5.omsetku.viewmodel.CategoryViewModel
+import com.k5.omsetku.viewmodel.ProductViewModel
 import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AddProductFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddProductFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
     private var _binding: FragmentAddProductBinding? = null
     private val binding get() = _binding!!
-    private val productRepo = ProductRepository()
-    private val categoryRepo = CategoryRepository()
     private val dropdownItem = mutableListOf<Category>()
     private lateinit var categoryId: String
+    private lateinit var productViewModel: ProductViewModel
+    private lateinit var categoryViewModel: CategoryViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+        productViewModel = ViewModelProvider(this)[ProductViewModel::class.java]
+        categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -62,15 +45,26 @@ class AddProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        categoryViewModel.categories.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, dropdownItem)
+                    binding.dropdownCategory.setAdapter(adapter)
+                }
+                is LoadState.Success -> {
+                    for (category in loadState.data) {
+                        dropdownItem.add(category)
+                    }
+                }
+                is LoadState.Error -> {
+                    Toast.makeText(requireContext(), "Failed to fetch categories: ${loadState.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
         binding.btnBackToProduct.setOnClickListener {
-            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                ProductFragment())
+            parentFragmentManager.popBackStack()
         }
-
-        getCategory()
-
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, dropdownItem)
-        binding.dropdownCategory.setAdapter(adapter)
 
         binding.dropdownCategory.setOnItemClickListener { parent, view, position, id ->
             val selectedItem = parent.getItemAtPosition(position) as Category
@@ -97,57 +91,21 @@ class AddProductFragment : Fragment() {
                         productDescription = inputDescription,
                         categoryId = categoryId
                     )
-                    addProduct(product)
+
+                    lifecycleScope.launch {
+                        val result = productViewModel.addProduct(product)
+                        result.onSuccess {
+                            Toast.makeText(requireContext(), "Product has been successfully added", Toast.LENGTH_SHORT).show()
+
+                            parentFragmentManager.setFragmentResult("category_update_request", Bundle.EMPTY)
+                            parentFragmentManager.popBackStack()
+                        }.onFailure { e ->
+                            Toast.makeText(requireContext(), "Failed to add product: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             }
         }
 
-    }
-
-    fun addProduct(product: Product) {
-        lifecycleScope.launch {
-            val result = productRepo.addProduct(product)
-            result.onSuccess {
-                (targetFragment as? ProductFragment)?.onProductUpdated()
-
-                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                    ProductFragment())
-            }.onFailure { e ->
-                Toast.makeText(requireContext(), "Failed to add new product: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    fun getCategory() {
-        lifecycleScope.launch {
-            val result = categoryRepo.getCategories()
-            result.onSuccess { categories ->
-                for (category in categories) {
-                    dropdownItem.add(category)
-                }
-            }.onFailure { e ->
-                Toast.makeText(requireContext(), "Failed to fetch categories: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddProductFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddProductFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

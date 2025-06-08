@@ -6,49 +6,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.k5.omsetku.R
 import com.k5.omsetku.databinding.FragmentEditProductBinding
 import com.k5.omsetku.model.Category
 import com.k5.omsetku.model.Product
-import com.k5.omsetku.repository.CategoryRepository
-import com.k5.omsetku.repository.ProductRepository
-import com.k5.omsetku.utils.FirebaseUtils
-import com.k5.omsetku.utils.LoadFragment
+import com.k5.omsetku.utils.LoadState
+import com.k5.omsetku.viewmodel.CategoryViewModel
+import com.k5.omsetku.viewmodel.ProductViewModel
 import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [EditProductFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EditProductFragment : Fragment() {
     private var _binding: FragmentEditProductBinding? = null
     private val binding get() = _binding!!
     private var product: Product? = null
-    private val productRepo = ProductRepository()
-    private val categoryRepo = CategoryRepository()
     private val dropdownItem = mutableListOf<Category>()
     private lateinit var categoryId: String
+    private lateinit var productViewModel: ProductViewModel
+    private lateinit var categoryViewModel: CategoryViewModel
 
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let { bundle ->
             product = bundle.getParcelable(ARG_PRODUCT)
         }
+
+        productViewModel = ViewModelProvider(this)[ProductViewModel::class.java]
+        categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -63,20 +50,41 @@ class EditProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnBackToProduct.setOnClickListener {
-            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                ProductFragment())
-        }
+        categoryViewModel.categories.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, dropdownItem)
+                    binding.dropdownCategory.setAdapter(adapter)
+                }
+                is LoadState.Success -> {
+                    for (category in loadState.data) {
+                        dropdownItem.add(category)
+                    }
 
-        getCategoryListDropdown()
+                    // Mengisi dropdown dengan kategori awal produk
+                    val selectedCategory = dropdownItem.find { it.categoryId == product?.categoryId }
+                    if (selectedCategory != null) {
+                        binding.dropdownCategory.setText(selectedCategory.categoryName, false)
+                        categoryId = selectedCategory.categoryId
+                    } else {
+                        binding.dropdownCategory.setText("")
+                        categoryId = ""
+                    }
+                }
+                is LoadState.Error -> {
+                    Toast.makeText(requireContext(), "Failed to fetch categories: ${loadState.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        binding.btnBackToProduct.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
 
         binding.inputProductName.setText(product?.productName)
         binding.inputStock.setText(product?.productStock.toString())
         binding.inputPrice.setText(product?.productPrice.toString())
         binding.inputDescription.setText(product?.productDescription)
-
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, dropdownItem)
-        binding.dropdownCategory.setAdapter(adapter)
 
         // Memperbarui id kategori berdasarkan kategori yang dipilih pada dropdown
         binding.dropdownCategory.setOnItemClickListener { parent, view, position, id ->
@@ -104,44 +112,18 @@ class EditProductFragment : Fragment() {
                     if (inputDescription != product?.productDescription) updatedProduct["productDescription"] = inputDescription
                     if (categoryId != product?.categoryId) updatedProduct["categoryId"] = categoryId
 
-                    updateProduct(product?.productId.toString(), updatedProduct)
-                }
-            }
-        }
-    }
+                    lifecycleScope.launch {
+                        val result = productViewModel.updateProduct(product?.productId.toString(), updatedProduct)
+                        result.onSuccess {
+                            Toast.makeText(requireContext(), "Product has been successfully updated", Toast.LENGTH_SHORT).show()
 
-    fun updateProduct(productId: String, newProduct: Map<String, Any>) {
-        lifecycleScope.launch {
-            val result = productRepo.updateProduct(productId, newProduct)
-            result.onSuccess {
-                (targetFragment as? ProductFragment)?.onProductUpdated()
-                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                    ProductFragment())
-            }.onFailure { e ->
-                Toast.makeText(requireContext(), "Failed to update prouduct: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    fun getCategoryListDropdown() {
-        lifecycleScope.launch {
-            val result = categoryRepo.getCategories()
-            result.onSuccess { categories ->
-                for (category in categories) {
-                    dropdownItem.add(category)
+                            parentFragmentManager.setFragmentResult("category_update_request", Bundle.EMPTY)
+                            parentFragmentManager.popBackStack()
+                        }.onFailure { e ->
+                            Toast.makeText(requireContext(), "Failed to update product: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
-
-                // Mengisi dropdown dengan kategori awal produk
-                val selectedCategory = dropdownItem.find { it.categoryId == product?.categoryId }
-                if (selectedCategory != null) {
-                    binding.dropdownCategory.setText(selectedCategory.categoryName, false)
-                    categoryId = selectedCategory.categoryId
-                } else {
-                    binding.dropdownCategory.setText("")
-                    categoryId = ""
-                }
-            }.onFailure { e ->
-                Toast.makeText(requireContext(), "Failed to fetch categories: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
