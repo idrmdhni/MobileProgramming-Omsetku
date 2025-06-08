@@ -1,16 +1,11 @@
 package com.k5.omsetku.viewmodel
 
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import com.k5.omsetku.R
-import com.k5.omsetku.fragment.CategoryFragment
 import com.k5.omsetku.model.Category
 import com.k5.omsetku.repository.CategoryRepository
-import com.k5.omsetku.utils.LoadFragment
 import com.k5.omsetku.utils.LoadState
 import kotlinx.coroutines.launch
 

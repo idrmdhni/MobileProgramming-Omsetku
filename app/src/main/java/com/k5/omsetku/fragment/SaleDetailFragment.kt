@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
 import com.k5.omsetku.model.Product
-import com.k5.omsetku.adapter.SalesDetailsProductListAdapter
+import com.k5.omsetku.adapter.SaleDetailProductListAdapter
 import com.k5.omsetku.utils.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
@@ -19,16 +19,16 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [SalesDetailsFragment.newInstance] factory method to
+ * Use the [SaleDetailFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SalesDetailsFragment : Fragment() {
+class SaleDetailFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     private lateinit var rvSalesDetailsProductList: RecyclerView
-    private lateinit var salesDetailsProductListAdapter: SalesDetailsProductListAdapter
+    private lateinit var saleDetailProductListAdapter: SaleDetailProductListAdapter
     private lateinit var productList: ArrayList<Product>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +53,7 @@ class SalesDetailsFragment : Fragment() {
         val btnBackToSales: LinearLayout = view.findViewById(R.id.btn_back_to_sales)
         btnBackToSales.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                SalesFragment())
+                SaleFragment())
         }
 
         productList = ArrayList()
@@ -67,8 +67,8 @@ class SalesDetailsFragment : Fragment() {
         productList.add(Product("8", "Vortex Mono 75", 69, 312000, "accessories"))
 
         rvSalesDetailsProductList = view.findViewById(R.id.rv_sales_details_product_list)
-        salesDetailsProductListAdapter = SalesDetailsProductListAdapter(productList)
-        rvSalesDetailsProductList.adapter = salesDetailsProductListAdapter
+        saleDetailProductListAdapter = SaleDetailProductListAdapter(productList)
+        rvSalesDetailsProductList.adapter = saleDetailProductListAdapter
     }
 
     companion object {
@@ -83,7 +83,7 @@ class SalesDetailsFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            SalesDetailsFragment().apply {
+            SaleDetailFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

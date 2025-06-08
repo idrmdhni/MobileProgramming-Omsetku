@@ -13,6 +13,7 @@ class SaleRepository {
             .collection("sales")
     }
 
+    // CREATE
     suspend fun addSale(sale: Sale): Result<Sale> {
         val uid = FirebaseUtils.getCurrentUserId()
         if (uid == null) {
@@ -28,6 +29,7 @@ class SaleRepository {
         }
     }
 
+    // READ
     suspend fun getSales(): Result<List<Sale>> {
         val uid = FirebaseUtils.getCurrentUserId()
         if (uid == null) {
@@ -47,6 +49,7 @@ class SaleRepository {
         }
     }
 
+    // READ (Mendapatkan satu data berdasarkan ID)
     suspend fun getSaleById(saleId: String): Result<Sale> {
         val uid = FirebaseUtils.getCurrentUserId()
         if (uid == null) {
@@ -93,7 +96,7 @@ class SaleRepository {
         }
 
         val saleRef = getSalesCollection(uid).document(saleId)
-        val saleDetailsCollection = saleRef.collection("sale_details")
+        val saleDetailsCollection = saleRef.collection("sales_details")
 
         return try {
             val querySnapshot = saleDetailsCollection.get().await()

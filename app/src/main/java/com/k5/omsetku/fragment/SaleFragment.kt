@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.k5.omsetku.R
 import com.k5.omsetku.model.Sale
-import com.k5.omsetku.adapter.SalesAdapter
+import com.k5.omsetku.adapter.SaleAdapter
 import com.k5.omsetku.utils.LoadFragment
 import java.util.ArrayList
 
@@ -20,12 +20,12 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [SalesFragment.newInstance] factory method to
+ * Use the [SaleFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
+class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
     private lateinit var recyclerViewSales: RecyclerView
-    private lateinit var salesAdapter: SalesAdapter
+    private lateinit var saleAdapter: SaleAdapter
     private lateinit var saleList: ArrayList<Sale>
 
     // TODO: Rename and change types of parameters
@@ -45,7 +45,7 @@ class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sales, container, false)
+        return inflater.inflate(R.layout.fragment_sale, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,8 +54,8 @@ class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
         recyclerViewSales = view.findViewById(R.id.rv_sales)
 
 
-        salesAdapter = SalesAdapter(emptyList(), this)
-        recyclerViewSales.adapter = salesAdapter
+        saleAdapter = SaleAdapter(emptyList(), this)
+        recyclerViewSales.adapter = saleAdapter
 
         val btnAddSales: FloatingActionButton = view.findViewById(R.id.btn_add_sales)
         btnAddSales.setOnClickListener {
@@ -67,7 +67,7 @@ class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
         sale: Sale,
         position: Int
     ) {
-        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, SalesDetailsFragment())
+        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, SaleDetailFragment())
     }
 
 
@@ -83,7 +83,7 @@ class SalesFragment : Fragment(), SalesAdapter.OnItemActionListener {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            SalesFragment().apply {
+            SaleFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

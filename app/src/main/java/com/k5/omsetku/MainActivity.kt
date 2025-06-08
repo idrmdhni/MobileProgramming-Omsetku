@@ -9,7 +9,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.k5.omsetku.fragment.CategoryFragment
 import com.k5.omsetku.fragment.HomeFragment
 import com.k5.omsetku.fragment.ProductFragment
-import com.k5.omsetku.fragment.SalesFragment
+import com.k5.omsetku.fragment.SaleFragment
 import androidx.core.graphics.toColorInt
 import com.k5.omsetku.utils.LoadFragment
 
@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var homeFragment: HomeFragment
     private lateinit var categoryFragment: CategoryFragment
     private lateinit var productFragment: ProductFragment
-    private lateinit var salesFragment: SalesFragment
+    private lateinit var saleFragment: SaleFragment
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         homeFragment = HomeFragment()
         categoryFragment = CategoryFragment()
         productFragment = ProductFragment()
-        salesFragment = SalesFragment()
+        saleFragment = SaleFragment()
 
         LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, HomeFragment())
 
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                     LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, productFragment)
                 }
                 R.id.nav_sales -> {
-                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, salesFragment)
+                    LoadFragment.loadMainFragment(supportFragmentManager, R.id.host_fragment, saleFragment)
                 }
             }
             true

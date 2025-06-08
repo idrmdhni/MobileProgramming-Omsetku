@@ -14,48 +14,50 @@ import com.k5.omsetku.R
 import java.text.NumberFormat
 import java.util.Locale
 import androidx.core.graphics.toColorInt
+import androidx.lifecycle.ViewModelProvider
+import com.k5.omsetku.databinding.ChooseProductListBinding
+import com.k5.omsetku.databinding.PopupChooseProductBinding
+import com.k5.omsetku.model.Category
+import com.k5.omsetku.viewmodel.CategoryViewModel
 
 class ChooseProductListAdapter(
     private var productList: List<Product>,
+    private var categoryList: List<Category>,
     private val onItemClick: (Product) -> Unit
 ): RecyclerView.Adapter<ChooseProductListAdapter.ProductViewHolder>(), Filterable {
     private var filteredProducts: List<Product> = productList
     private val selectedProductIds = mutableSetOf<String>()
 
-    inner class ProductViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val displayProductName: TextView = itemView.findViewById(R.id.display_product_name)
-        val displayProductPrice: TextView = itemView.findViewById(R.id.display_product_price)
-        val displayProductCategory: TextView = itemView.findViewById(R.id.display_product_category)
-        val displayProductStock: TextView = itemView.findViewById(R.id.display_product_stock)
-        val itemContainer: CardView = itemView.findViewById(R.id.item_container)
+    inner class ProductViewHolder(val binding: ChooseProductListBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bind(product: Product) {
+            val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+
+            binding.displayProductName.text = product.productName
+            binding.displayProductPrice.text = rupiahFormat.format(product.productPrice)
+            binding.displayProductCategory.text = categoryList.find{ it.categoryId == product.categoryId }?.categoryName
+            binding.displayProductStock.text = product.productStock.toString()
+
+            if (selectedProductIds.contains(product.productId)) {
+                binding.itemContainer.setCardBackgroundColor("#E5E5E5".toColorInt())
+            } else {
+                binding.itemContainer.setCardBackgroundColor("#FFFFFF".toColorInt())
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.choose_product_list, parent, false)
+        val binding = ChooseProductListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return ProductViewHolder(itemView)
+        return ProductViewHolder(binding)
     }
 
     @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val currentProduct = filteredProducts[position]
 
-        val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-
-        holder.displayProductName.text = currentProduct.productName
-        holder.displayProductCategory.text = currentProduct.categoryId
-        holder.displayProductPrice.text = rupiahFormat.format(currentProduct.productPrice)
-        holder.displayProductStock.text = currentProduct.productStock.toString()
-
-        if (selectedProductIds.contains(currentProduct.productId)) {
-            holder.itemContainer.setCardBackgroundColor("#E5E5E5".toColorInt())
-        } else {
-            holder.itemContainer.setCardBackgroundColor("#FFFFFF".toColorInt())
-        }
+        holder.bind(currentProduct)
 
         holder.itemView.setOnClickListener { onItemClick(currentProduct) }
-
     }
 
     // Method untuk mengelola item yang terpilih berdasarkan ID item
@@ -84,6 +86,12 @@ class ChooseProductListAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
+    fun updateCategories(newItems: List<Category>) {
+        this.categoryList = newItems
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     fun clearSelections() {
         selectedProductIds.clear()
         notifyDataSetChanged()
@@ -99,7 +107,9 @@ class ChooseProductListAdapter(
                     val resultList = mutableListOf<Product>()
                     for (row in productList) { // Filter dari list asli
                         if (row.productName.lowercase(Locale.ROOT).contains(charSearch.lowercase(Locale.ROOT)) ||
-                            row.categoryId.lowercase(Locale.ROOT).contains(charSearch.lowercase(Locale.ROOT))) {
+                            categoryList.find{ it.categoryId == row.categoryId }?.categoryName?.lowercase(Locale.ROOT)
+                                ?.contains(charSearch.lowercase(Locale.ROOT)) == true
+                        ) {
                             resultList.add(row)
                         }
                     }

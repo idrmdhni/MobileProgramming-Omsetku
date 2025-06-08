@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -24,36 +25,39 @@ import com.k5.omsetku.model.Product
 import com.k5.omsetku.adapter.ChooseProductListAdapter
 import com.k5.omsetku.R
 import androidx.core.graphics.drawable.toDrawable
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.k5.omsetku.databinding.FragmentProductBinding
+import com.k5.omsetku.databinding.PopupChooseProductBinding
+import com.k5.omsetku.utils.LoadState
+import com.k5.omsetku.viewmodel.CategoryViewModel
+import com.k5.omsetku.viewmodel.ProductViewModel
 
 class ChooseProductFragment: DialogFragment() {
+    private lateinit var categoryViewModel: CategoryViewModel
+    private lateinit var productViewModel: ProductViewModel
     private lateinit var rvChooseProductList: RecyclerView
     private lateinit var chooseProductListAdapter: ChooseProductListAdapter
     private lateinit var searchEditText: EditText
     private lateinit var cancelButton: Button
     private lateinit var addButton: Button
+    private var _binding: PopupChooseProductBinding? = null
+    private val binding get() = _binding!!
 
     companion object {
         const val REQUEST_KEY_SELECTED_PRODUCTS = "request_key_selected_products"
         const val BUNDLE_KEY_SELECTED_PRODUCTS = "bundle_key_selected_products"
     }
 
-    // Data dummy untuk contoh
-    private val allItems = listOf(
-        Product("1", "Lenovo LOQ 15", 69, 11800000, "laptop"),
-        Product("2", "Asus TUF A15", 69, 9210000, "laptop"),
-        Product("3", "MSI Thin 15", 69, 8820000, "laptop"),
-        Product("4", "MacBook Air M4", 69, 16700000, "laptop"),
-        Product("5", "Iphone 16", 69, 15000000, "smartphone"),
-        Product("6", "Samsung S24", 69, 9060000, "smartphone"),
-        Product("7", "Xiaomi G24i", 69, 1300000, "monitor"),
-        Product("8", "Vortex Mono 75", 69, 312000, "accessories")
-    )
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         // Set transparent background to show rounded corners
         dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE) // No default title bar
+
+        productViewModel = ViewModelProvider(this)[ProductViewModel::class.java]
+        categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
+
         return dialog
     }
 
@@ -61,7 +65,8 @@ class ChooseProductFragment: DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.popup_choose_product, container, false)
+        _binding = PopupChooseProductBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,10 +80,46 @@ class ChooseProductFragment: DialogFragment() {
 
         setupRecyclerView()
         setupListeners()
+
+        productViewModel.products.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (!binding.swipeRefreshLayout.isRefreshing) {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.rvChooseProductList.visibility = View.GONE
+                    }
+                }
+                is LoadState.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvChooseProductList.visibility = View.VISIBLE
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    chooseProductListAdapter.updateProducts(loadState.data)
+                }
+                is LoadState.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvChooseProductList.visibility = View.GONE
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(requireContext(), "Failed to fetch products: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        categoryViewModel.categories.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {}
+                is LoadState.Success -> {
+                    chooseProductListAdapter.updateCategories(loadState.data)
+                }
+                is LoadState.Error -> {
+                    Toast.makeText(requireContext(), "Failed to fetch categories: ${loadState.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     }
 
     private fun setupRecyclerView() {
-        chooseProductListAdapter = ChooseProductListAdapter(allItems) { product ->
+        chooseProductListAdapter = ChooseProductListAdapter(emptyList(), emptyList()) { product ->
             chooseProductListAdapter.toggleSelection(product)
             updateAddButtonState()
         }

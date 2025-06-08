@@ -11,10 +11,10 @@ import com.k5.omsetku.model.Sale
 import java.text.NumberFormat
 import java.util.Locale
 
-class SalesAdapter(
+class SaleAdapter(
     private val saleList: List<Sale>,
     private val onItemActionListener: OnItemActionListener?
-): RecyclerView.Adapter<SalesAdapter.SalesViewHolder>() {
+): RecyclerView.Adapter<SaleAdapter.SalesViewHolder>() {
     interface OnItemActionListener {
         fun onSalesDetailsClicked(sale: Sale, position: Int)
     }

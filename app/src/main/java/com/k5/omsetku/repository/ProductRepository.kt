@@ -8,7 +8,7 @@ import kotlinx.coroutines.tasks.await
 class ProductRepository {
     private val categoryRepo = CategoryRepository()
 
-    private fun getProductCollection(uid: String): CollectionReference {
+    private fun getProductsCollection(uid: String): CollectionReference {
         return FirebaseUtils.db.collection("users")
             .document(uid)
             .collection("products")
@@ -28,7 +28,7 @@ class ProductRepository {
                 return Result.failure(categoryResult.exceptionOrNull() ?: Exception("Category not found or validation error!"))
             }
 
-            val documentRef = getProductCollection(uid).add(product).await()
+            val documentRef = getProductsCollection(uid).add(product).await()
             product.productId = documentRef.id
             Result.success(product)
         } catch (e: Exception) {
@@ -45,7 +45,7 @@ class ProductRepository {
         }
 
         return try {
-            val querySnapshot = getProductCollection(uid).get().await()
+            val querySnapshot = getProductsCollection(uid).get().await()
             val products = querySnapshot.documents.mapNotNull { document ->
                 document.toObject(Product::class.java)?.apply { this.productId = document.id }
             }
@@ -64,7 +64,7 @@ class ProductRepository {
         }
 
         return try {
-            val documentSnapshot = getProductCollection(uid).document(id).get().await()
+            val documentSnapshot = getProductsCollection(uid).document(id).get().await()
             if (documentSnapshot.exists()) {
                 val document = documentSnapshot.toObject(Product::class.java)?.apply { this.productId = documentSnapshot.id }
 
@@ -90,7 +90,7 @@ class ProductRepository {
         }
 
         return try {
-            getProductCollection(uid).document(productId).update(updatedProduct).await()
+            getProductsCollection(uid).document(productId).update(updatedProduct).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -106,7 +106,7 @@ class ProductRepository {
         }
 
         return try {
-            getProductCollection(uid).document(productId).delete().await()
+            getProductsCollection(uid).document(productId).delete().await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

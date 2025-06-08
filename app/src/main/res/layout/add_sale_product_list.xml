@@ -50,13 +50,14 @@
             android:background="@drawable/backgroundlightsecondary_rounded2"
             android:gravity="center_vertical">
             <ImageView
+                android:id="@+id/btn_decrement"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="1dp"
                 android:paddingStart="2dp"
-                android:src="@drawable/add_circle_24px" />
+                android:src="@drawable/do_not_disturb_on_24px" />
             <EditText
-                android:id="@+id/total_product"
+                android:id="@+id/input_total_product"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -70,11 +71,12 @@
                 android:textStyle="bold"
                 android:textColor="@color/color1" />
             <ImageView
+                android:id="@+id/btn_increment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="1dp"
                 android:paddingStart="2dp"
-                android:src="@drawable/do_not_disturb_on_24px" />
+                android:src="@drawable/add_circle_24px" />
         </LinearLayout>
     </LinearLayout>
 

@@ -11,7 +11,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.R
 import com.k5.omsetku.model.Product
-import com.k5.omsetku.adapter.AddSalesProductListAdapter
+import com.k5.omsetku.adapter.AddSaleProductListAdapter
 import com.k5.omsetku.utils.LoadFragment
 
 // TODO: Rename parameter arguments, choose names that match
@@ -30,7 +30,7 @@ class AddSalesFragment : Fragment() {
     private var param2: String? = null
 
     private lateinit var rvAddSalesProductList: RecyclerView
-    private lateinit var addSalesProductListAdapter: AddSalesProductListAdapter
+    private lateinit var addSaleProductListAdapter: AddSaleProductListAdapter
     private var productList: ArrayList<Product> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,12 +55,12 @@ class AddSalesFragment : Fragment() {
         val btnBackToSales: LinearLayout = view.findViewById(R.id.btn_back_to_sales)
         btnBackToSales.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                SalesFragment())
+                SaleFragment())
         }
 
         rvAddSalesProductList = view.findViewById(R.id.rv_add_sales_product_list)
-        addSalesProductListAdapter = AddSalesProductListAdapter()
-        rvAddSalesProductList.adapter = addSalesProductListAdapter
+        addSaleProductListAdapter = AddSaleProductListAdapter(emptyList(), emptyList())
+        rvAddSalesProductList.adapter = addSaleProductListAdapter
 
         val btnAddProduct: LinearLayout = view.findViewById(R.id.btn_add_product)
         btnAddProduct.setOnClickListener {
@@ -87,7 +87,7 @@ class AddSalesFragment : Fragment() {
                     }
 
                     if (it.isNotEmpty()) {
-                        addSalesProductListAdapter.updateProducts(productList)
+                        addSaleProductListAdapter.updateProducts(productList)
                         val names = it.joinToString(", ") { product -> product.productName }
                         Toast.makeText(context, "Received items: $names", Toast.LENGTH_LONG).show()
                         // Lakukan sesuatu dengan daftar item yang diterima

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.SalesFragment"
+    tools:context=".fragment.SaleFragment"
     android:background="@color/background_light_secondary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -187,7 +187,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="32dp"
                     android:background="@android:color/transparent"
-                    android:hint="Search Category"
+                    android:hint="Search Transaction"
                     android:layout_centerVertical="true"
                     android:inputType="text"
                     android:maxLines="1" />
