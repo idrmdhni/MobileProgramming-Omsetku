@@ -67,9 +67,6 @@ class AddCategoryFragment : Fragment() {
                     .show()
             } else {
                 addCategory(inputCategoryName.toString())
-
-                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                    CategoryFragment())
             }
         }
     }
@@ -79,6 +76,9 @@ class AddCategoryFragment : Fragment() {
             val result = categoryRepo.addCategory(categoryName)
             result.onSuccess {
                 (targetFragment as? CategoryFragment)?.onCategoryUpdated()
+
+                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                    CategoryFragment())
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to add new kategori: ${e.message}", Toast.LENGTH_SHORT).show()
             }

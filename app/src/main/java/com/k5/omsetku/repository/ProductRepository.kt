@@ -21,7 +21,7 @@ class ProductRepository {
             return Result.failure(IllegalStateException("Pengguna belum login"))
         }
 
-        val newProduct = Product(productName = name, productStock = stock, productPrice = price, productDescription = desc,categoryId = catId)
+        val newProduct = Product(productName = name, productStock = stock, productPrice = price, productDescription = desc, categoryId = catId)
 
         return try {
             val documentRef = getProductCollection(uid).add(newProduct).await()

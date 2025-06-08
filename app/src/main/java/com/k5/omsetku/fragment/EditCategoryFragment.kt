@@ -66,9 +66,6 @@ class EditCategoryFragment : Fragment() {
                 Toast.makeText(requireContext(), "Input cannot be empty!", Toast.LENGTH_SHORT).show()
             } else {
                 updateCategory(category?.categoryId.toString(), inputCategoryName)
-
-                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                    CategoryFragment())
             }
         }
     }
@@ -78,6 +75,9 @@ class EditCategoryFragment : Fragment() {
             val result = categoryRepo.updateCategory(categoryId, categoryName)
             result.onSuccess { category ->
                 (targetFragment as? CategoryFragment)?.onCategoryUpdated()
+
+                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                    CategoryFragment())
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to update category: ${e.message}", Toast.LENGTH_SHORT).show()
             }

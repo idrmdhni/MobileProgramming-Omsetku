@@ -90,10 +90,7 @@ class AddProductFragment : Fragment() {
                 if (inputStock == null || inputPrice == null) {
                     Toast.makeText(requireContext(), "Stock or price must be number!", Toast.LENGTH_SHORT).show()
                 } else {
-                    addProduct(inputProductName, inputStock, inputPrice, inputDescription, dropdownCategory)
-
-                    LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                        ProductFragment())
+                    addProduct(inputProductName, inputStock, inputPrice, inputDescription, categoryId)
                 }
             }
         }
@@ -105,6 +102,9 @@ class AddProductFragment : Fragment() {
             val result = productRepo.addProduct(productName, productStock, productPrice, productDesc, categoryId)
             result.onSuccess {
                 (targetFragment as? ProductFragment)?.onProductUpdated()
+
+                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                    ProductFragment())
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to add new product: ${e.message}", Toast.LENGTH_SHORT).show()
             }

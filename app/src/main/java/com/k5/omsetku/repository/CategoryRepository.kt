@@ -102,5 +102,4 @@ class CategoryRepository {
             Result.failure(e)
         }
     }
-
 }

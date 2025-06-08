@@ -68,17 +68,17 @@ class EditProductFragment : Fragment() {
                 ProductFragment())
         }
 
+        getCategoryListDropdown()
+
         binding.inputProductName.setText(product?.productName)
         binding.inputStock.setText(product?.productStock.toString())
         binding.inputPrice.setText(product?.productPrice.toString())
         binding.inputDescription.setText(product?.productDescription)
-        binding.dropdownCategory.setText(product?.categoryId)
 
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, dropdownItem)
         binding.dropdownCategory.setAdapter(adapter)
 
-        getCategory()
-
+        // Memperbarui id kategori berdasarkan kategori yang dipilih pada dropdown
         binding.dropdownCategory.setOnItemClickListener { parent, view, position, id ->
             val selectedItem = parent.getItemAtPosition(position) as Category
             categoryId = selectedItem.categoryId
@@ -97,10 +97,7 @@ class EditProductFragment : Fragment() {
                 if (inputStock == null || inputPrice == null) {
                     Toast.makeText(requireContext(), "Stock or price must be number!", Toast.LENGTH_SHORT).show()
                 } else {
-                    updateProduct(product?.productId.toString(), inputProductName, inputStock, inputPrice, inputDescription, dropdownCategory)
-
-                    LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                        ProductFragment())
+                    updateProduct(product?.productId.toString(), inputProductName, inputStock, inputPrice, inputDescription, categoryId)
                 }
             }
         }
@@ -111,18 +108,30 @@ class EditProductFragment : Fragment() {
             val result = productRepo.updateProduct(productId, productName, productStock, productPrice, productDesc, categoryId)
             result.onSuccess {
                 (targetFragment as? ProductFragment)?.onProductUpdated()
+                LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
+                    ProductFragment())
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to update prouduct: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun getCategory() {
+    fun getCategoryListDropdown() {
         lifecycleScope.launch {
             val result = categoryRepo.getCategories()
             result.onSuccess { categories ->
                 for (category in categories) {
                     dropdownItem.add(category)
+                }
+
+                // Mengisi dropdown dengan kategori awal produk
+                val selectedCategory = dropdownItem.find { it.categoryId == product?.categoryId }
+                if (selectedCategory != null) {
+                    binding.dropdownCategory.setText(selectedCategory.categoryName, false)
+                    categoryId = selectedCategory.categoryId
+                } else {
+                    binding.dropdownCategory.setText("")
+                    categoryId = ""
                 }
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to fetch categories: ${e.message}", Toast.LENGTH_SHORT).show()
