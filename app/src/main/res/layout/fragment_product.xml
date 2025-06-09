@@ -41,6 +41,7 @@
                         android:layout_height="32dp"
                         android:src="@drawable/search_24px"/>
                     <EditText
+                        android:id="@+id/input_search"
                         android:layout_marginHorizontal="40dp"
                         android:layout_width="match_parent"
                         android:layout_height="32dp"
@@ -53,7 +54,8 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:layout_alignParentRight="true"
-                        android:src="@drawable/tune_24px"/>
+                        android:src="@drawable/tune_24px"
+                        android:visibility="gone" />
                 </RelativeLayout>
             </LinearLayout>
 

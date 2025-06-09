@@ -1,6 +1,8 @@
 package com.k5.omsetku.fragment
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -62,6 +64,17 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
                     binding.rvProduct.visibility = View.VISIBLE
                     binding.swipeRefreshLayout.isRefreshing = false
                     productAdapter.productList = loadState.data
+
+                    binding.inputSearch.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        }
+
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            productAdapter.filter.filter(s.toString())
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {}
+                    })
                 }
                 is LoadState.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -73,8 +86,10 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
             }
         })
 
-        setFragmentResultListener("category_update_request") { requestKey, bundle ->
-            if (requestKey == "category_update_request") {
+        setFragmentResultListener("product_update_request") { requestKey, bundle ->
+            if (requestKey == "product_update_request") {
+                binding.inputSearch.setText("")
+
                 productViewModel.refreshProducts()
             }
         }
@@ -88,6 +103,12 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        productAdapter.filter.filter(binding.inputSearch.text.toString())
     }
 
     override fun onItemEditClicked(product: Product) {
@@ -109,6 +130,8 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to delete product: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+
+            binding.inputSearch.setText("")
         }
     }
 }

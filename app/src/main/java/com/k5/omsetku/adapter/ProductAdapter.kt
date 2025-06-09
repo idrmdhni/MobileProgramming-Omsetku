@@ -5,6 +5,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filter.FilterResults
+import android.widget.Filterable
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.recyclerview.widget.RecyclerView
@@ -17,14 +20,17 @@ import java.util.Locale
 
 class ProductAdapter(
     private val onItemActionListener: OnItemActionListener?
-): RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+): RecyclerView.Adapter<ProductAdapter.ProductViewHolder>(), Filterable {
 
     var productList: List<Product> = emptyList()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
+            this.filteredProducts = value
             notifyDataSetChanged()
         }
+
+    private var filteredProducts: List<Product> = productList
 
     interface OnItemActionListener {
         fun onItemEditClicked(product: Product)
@@ -51,7 +57,7 @@ class ProductAdapter(
 
     @SuppressLint("CutPasteId", "InflateParams")
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val currentItem = productList[position]
+        val currentItem = filteredProducts[position]
 
         holder.bind(currentItem)
 
@@ -91,5 +97,35 @@ class ProductAdapter(
 
     }
 
-    override fun getItemCount() = productList.size
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                filteredProducts = if (charSearch.isEmpty()) {
+                    productList
+                } else {
+                    val resultList = mutableListOf<Product>()
+                    for (row in productList) { // Filter dari list asli
+                        if (row.productName.lowercase(Locale.ROOT).contains(charSearch.lowercase(Locale.ROOT))) {
+                            resultList.add(row)
+                        }
+                    }
+                    resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = filteredProducts
+                return filterResults
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredProducts = results?.values as List<Product>
+
+                notifyDataSetChanged()
+            }
+        }
+    }
+
+    override fun getItemCount() = filteredProducts.size
 }

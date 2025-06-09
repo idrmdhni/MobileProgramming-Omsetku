@@ -1,11 +1,16 @@
 package com.k5.omsetku.fragment
 
+import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.k5.omsetku.R
@@ -66,12 +71,23 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
 
                     val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
                     var totalSales: Long = 0
-                    for (totalPurhcase in saleAdapter.saleList) {
-                        totalSales += totalPurhcase.totalPurchase
+                    for (totalPurchase in saleAdapter.saleList) {
+                        totalSales += totalPurchase.totalPurchase
                     }
 
                     binding.inputTotalTransaction.setText(saleAdapter.itemCount.toString())
-                    binding.inputTotalSales.setText(rupiahFormat.format(totalSales))
+                    binding.inputTotalSales.setText(rupiahFormat.format(totalSales).trim())
+
+                    binding.inputSearch.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        }
+
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            saleAdapter.filter.filter(s.toString())
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {}
+                    })
                 }
                 is LoadState.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -83,9 +99,28 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
             }
         })
 
+        setFragmentResultListener("sale_update_request") { requestKey, bundle ->
+            if (requestKey == "sale_update_request") {
+                binding.inputSearch.setText("")
+
+                saleViewModel.refreshSales()
+            }
+        }
+
         binding.btnAddSales.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, AddSaleFragment())
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        saleAdapter.filter.filter(binding.inputSearch.text)
     }
 
     override fun onSalesDetailsClicked(sale: Sale) {

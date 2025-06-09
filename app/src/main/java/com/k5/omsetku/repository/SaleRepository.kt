@@ -1,13 +1,17 @@
 package com.k5.omsetku.repository
 
+import com.google.android.gms.common.api.Batch
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
+import com.k5.omsetku.model.Product
 import com.k5.omsetku.model.Sale
 import com.k5.omsetku.model.SaleDetail
 import com.k5.omsetku.utils.FirebaseUtils
 import kotlinx.coroutines.tasks.await
 
 class SaleRepository {
+    private val productRepo: ProductRepository by lazy { ProductRepository() }
+
     private fun getSalesCollection(uid: String): CollectionReference {
         return FirebaseUtils.db.collection("users")
             .document(uid)
@@ -37,6 +41,35 @@ class SaleRepository {
             return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
+        // Ambil semua produk yang terlibat dalam transaksi ini
+        val productIds = saleDetailList.map { it.productId }.distinct()
+        val productsToUpdate = mutableMapOf<String, Product>()
+
+        for (productId in productIds) {
+            val productResult = productRepo.getProductById(productId)
+            if (productResult.isFailure) {
+                return Result.failure(productResult.exceptionOrNull() ?: Exception("Product with ID $productId not found or failed to fetch."))
+            }
+            val product = productResult.getOrThrow()
+            productsToUpdate[productId] = product
+        }
+
+        // Lakukan validasi stok untuk setiap saleDetail
+        for (saleDetail in saleDetailList) {
+            val product = productsToUpdate[saleDetail.productId]
+            if (product == null) {
+                return Result.failure(NoSuchElementException("Product with ID ${saleDetail.productId} not found during stock validation."))
+            }
+
+            if (saleDetail.quantity > product.productStock) {
+                return Result.failure(
+                    IllegalArgumentException("Insufficient stock for product '${product.productName}'. Available: ${product.productStock}, Requested: ${saleDetail.quantity}")
+                )
+            }
+            // Kurangi stok di objek produk yang ada di memory untuk perhitungan batch
+            product.productStock -= saleDetail.quantity
+        }
+
         val batch = FirebaseUtils.db.batch()
         val saleDocRef = getSalesCollection(uid).document()
         batch.set(saleDocRef, sale)
@@ -44,6 +77,17 @@ class SaleRepository {
         for (saleDetail in saleDetailList) {
             val saleDetailDocRef = saleDocRef.collection("sales_details").document()
             batch.set(saleDetailDocRef, saleDetail)
+
+            // Tambahkan operasi pengurangan stok ke batch
+            val product = productsToUpdate[saleDetail.productId]
+            if (product != null) {
+                val productDocRef = FirebaseUtils.db.collection("users")
+                    .document(uid)
+                    .collection("products")
+                    .document(saleDetail.productId)
+
+                batch.update(productDocRef, "productStock", product.productStock)
+            }
         }
 
         return try {

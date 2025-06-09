@@ -2,12 +2,15 @@ package com.k5.omsetku.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.k5.omsetku.model.Product
 import com.k5.omsetku.adapter.AddSaleProductListAdapter
@@ -15,6 +18,7 @@ import com.k5.omsetku.databinding.FragmentAddSaleBinding
 import com.k5.omsetku.model.Category
 import com.k5.omsetku.model.Sale
 import com.k5.omsetku.model.SaleDetail
+import com.k5.omsetku.viewmodel.ProductViewModel
 import com.k5.omsetku.viewmodel.SaleViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -28,9 +32,12 @@ class AddSaleFragment : Fragment() {
     private val binding get() = _binding!!
     private val productList: ArrayList<Product> = ArrayList()
     private val saleDetailList: ArrayList<SaleDetail> = ArrayList()
+    private lateinit var saleViewModel: SaleViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        saleViewModel = ViewModelProvider(this)[SaleViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -108,7 +115,19 @@ class AddSaleFragment : Fragment() {
             }
         }
 
+        binding.inputSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                addSaleProductListAdapter.filter.filter(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         binding.btnSave.setOnClickListener {
+            saleDetailList.clear()
+
             val inputBuyersName = binding.inputBuyersName.text.toString().trim()
 
             var counter = 0
@@ -141,20 +160,19 @@ class AddSaleFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun showChooseProductFragment() {
         val dialogFragment = ChooseProductFragment()
         dialogFragment.show(parentFragmentManager, "popup_choose_product")
     }
 
     private fun addSale(sale: Sale, saleDetail: List<SaleDetail>) {
-        val sale = Sale(
-            buyersName = sale.buyersName,
-            invoiceNumber = sale.invoiceNumber,
-            totalPurchase = sale.totalPurchase
-            )
-
         lifecycleScope.launch {
-            val result = SaleViewModel().addSaleBatch(sale, saleDetail)
+            val result = saleViewModel.addSaleBatch(sale, saleDetail)
             result.onSuccess {
                 Toast.makeText(requireContext(), "Transaction has been successfully added", Toast.LENGTH_SHORT).show()
 
@@ -162,8 +180,8 @@ class AddSaleFragment : Fragment() {
                 parentFragmentManager.popBackStack()
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to add transaction: ${e.message}", Toast.LENGTH_SHORT).show()
-
             }
         }
     }
+
 }

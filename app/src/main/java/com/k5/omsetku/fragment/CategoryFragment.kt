@@ -1,6 +1,8 @@
 package com.k5.omsetku.fragment
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -64,6 +66,17 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
                     binding.rvCategory.visibility = View.VISIBLE
                     binding.swipeRefreshLayout.isRefreshing = false
                     categoryAdapter.categoryList = loadState.data
+
+                    binding.inputSearch.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        }
+
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            categoryAdapter.filter.filter(s.toString())
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {}
+                    })
                 }
                 is LoadState.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -77,6 +90,8 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
 
         setFragmentResultListener("category_update_request") { requestKey, bundle ->
             if (requestKey == "category_update_request") {
+                binding.inputSearch.setText("")
+
                 // Ketika sinyal diterima, paksa refresh data
                 categoryViewModel.refreshCategories()
             }
@@ -89,6 +104,17 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
                 AddCategoryFragment()
             )
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        categoryAdapter.filter.filter(binding.inputSearch.text.toString())
     }
 
     override fun onItemEditClicked(category: Category) {
@@ -110,6 +136,8 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
             }.onFailure { e ->
                 Toast.makeText(requireContext(), "Failed to delete category: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+
+            binding.inputSearch.setText("")
         }
     }
 }

@@ -97,7 +97,7 @@ class AddProductFragment : Fragment() {
                         result.onSuccess {
                             Toast.makeText(requireContext(), "Product has been successfully added", Toast.LENGTH_SHORT).show()
 
-                            parentFragmentManager.setFragmentResult("category_update_request", Bundle.EMPTY)
+                            parentFragmentManager.setFragmentResult("product_update_request", Bundle.EMPTY)
                             parentFragmentManager.popBackStack()
                         }.onFailure { e ->
                             Toast.makeText(requireContext(), "Failed to add product: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -107,5 +107,10 @@ class AddProductFragment : Fragment() {
             }
         }
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

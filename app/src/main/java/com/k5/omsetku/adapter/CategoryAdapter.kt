@@ -5,6 +5,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.recyclerview.widget.RecyclerView
@@ -12,17 +14,22 @@ import com.google.android.material.button.MaterialButton
 import com.k5.omsetku.R
 import com.k5.omsetku.databinding.CategoryListBinding
 import com.k5.omsetku.model.Category
+import com.k5.omsetku.model.Product
+import java.util.Locale
 
 class CategoryAdapter(
     private var onItemActionListener: OnItemActionListener?
-): RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
+): RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>(), Filterable {
 
     var categoryList: List<Category>  = emptyList()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
+            this.filteredCategories = value
             notifyDataSetChanged()
         }
+
+    private var filteredCategories: List<Category> = categoryList
 
     interface OnItemActionListener {
         fun onItemEditClicked(category: Category)
@@ -43,7 +50,7 @@ class CategoryAdapter(
 
     @SuppressLint("InflateParams")
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        val currentItem = categoryList[position]
+        val currentItem = filteredCategories[position]
 
         holder.bind(currentItem)
 
@@ -84,5 +91,35 @@ class CategoryAdapter(
         }
     }
 
-    override fun getItemCount(): Int = categoryList.size
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                filteredCategories = if (charSearch.isEmpty()) {
+                    categoryList
+                } else {
+                    val resultList = mutableListOf<Category>()
+                    for (row in categoryList) { // Filter dari list asli
+                        if (row.categoryName.lowercase(Locale.ROOT).contains(charSearch.lowercase(Locale.ROOT))) {
+                            resultList.add(row)
+                        }
+                    }
+                    resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = filteredCategories
+                return filterResults
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredCategories = results?.values as List<Category>
+
+                notifyDataSetChanged()
+            }
+        }
+    }
+
+    override fun getItemCount(): Int = filteredCategories.size
 }

@@ -109,6 +109,7 @@
                     android:layout_weight="1.1"
                     android:background="@drawable/white_rounded2"
                     android:orientation="vertical"
+                    android:layout_marginEnd="6dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="8dp"
                     android:paddingHorizontal="12dp">
@@ -124,13 +125,14 @@
                     <EditText
                         android:id="@+id/input_total_sales"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:backgroundTint="@color/focused_gray_to_color2"
                         android:focusable="false"
                         android:longClickable="false"
                         android:cursorVisible="false"
                         android:textIsSelectable="false"
-                        android:maxLines="1" />
+                        android:maxLines="1"
+                        android:singleLine="true" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -152,13 +154,14 @@
                     <EditText
                         android:id="@+id/input_total_transaction"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:backgroundTint="@color/focused_gray_to_color2"
                         android:focusable="false"
                         android:longClickable="false"
                         android:cursorVisible="false"
                         android:textIsSelectable="false"
-                        android:maxLines="1" />
+                        android:maxLines="1"
+                        android:singleLine="true" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -178,18 +181,20 @@
                 android:paddingVertical="8dp"
                 android:paddingStart="10dp"
                 android:paddingEnd="22dp"
+                android:layout_marginBottom="6dp"
                 android:background="@drawable/white_rounded1">
                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/search_24px"/>
+
                 <EditText
-                    android:layout_marginStart="40dp"
+                    android:id="@+id/input_search"
                     android:layout_width="match_parent"
                     android:layout_height="32dp"
+                    android:layout_marginStart="40dp"
                     android:background="@android:color/transparent"
-                    android:hint="Search Transaction"
-                    android:layout_centerVertical="true"
+                    android:hint="Search Invoice or Total"
                     android:inputType="text"
                     android:maxLines="1" />
             </RelativeLayout>
@@ -201,7 +206,6 @@
             android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@id/form_wrapper"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingTop="8dp"
             android:paddingHorizontal="16dp">
             <LinearLayout
                 android:layout_width="match_parent"

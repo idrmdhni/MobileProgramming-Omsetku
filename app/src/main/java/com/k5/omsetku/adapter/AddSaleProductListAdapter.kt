@@ -6,6 +6,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.model.Product
 import com.k5.omsetku.databinding.AddSaleProductListBinding
@@ -13,11 +15,12 @@ import com.k5.omsetku.model.Category
 import java.text.NumberFormat
 import java.util.Locale
 
-class AddSaleProductListAdapter(): RecyclerView.Adapter<AddSaleProductListAdapter.ProductViewHolder>() {
+class AddSaleProductListAdapter(): RecyclerView.Adapter<AddSaleProductListAdapter.ProductViewHolder>(), Filterable {
     var productList: List<Product> = emptyList()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
+            this.filteredProducts = value
             notifyDataSetChanged()
         }
 
@@ -28,6 +31,7 @@ class AddSaleProductListAdapter(): RecyclerView.Adapter<AddSaleProductListAdapte
             notifyDataSetChanged()
         }
 
+    private var filteredProducts: List<Product> = productList
     var productQuantityList: ArrayList<Int> = ArrayList()
 
     inner class ProductViewHolder(val binding: AddSaleProductListBinding): RecyclerView.ViewHolder(binding.root) {
@@ -81,10 +85,43 @@ class AddSaleProductListAdapter(): RecyclerView.Adapter<AddSaleProductListAdapte
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val currentProduct = productList[position]
+        val currentProduct = filteredProducts[position]
 
         holder.bind(currentProduct, position)
     }
 
-    override fun getItemCount() = productList.size
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                filteredProducts = if (charSearch.isEmpty()) {
+                    productList
+                } else {
+                    val resultList = mutableListOf<Product>()
+                    for (row in productList) { // Filter dari list asli
+                        if (row.productName.lowercase(Locale.ROOT).contains(charSearch.lowercase(Locale.ROOT)) ||
+                            categoryList.find{ it.categoryId == row.categoryId }?.categoryName?.lowercase(Locale.ROOT)
+                                ?.contains(charSearch.lowercase(Locale.ROOT)) == true
+                        ) {
+                            resultList.add(row)
+                        }
+                    }
+                    resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = filteredProducts
+                return filterResults
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredProducts = results?.values as List<Product>
+
+                notifyDataSetChanged()
+            }
+        }
+    }
+
+    override fun getItemCount() = filteredProducts.size
 }

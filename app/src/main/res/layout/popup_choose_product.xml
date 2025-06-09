@@ -52,7 +52,7 @@
                 android:layout_height="32dp"
                 android:src="@drawable/search_24px"/>
             <EditText
-                android:id="@+id/input_search_product"
+                android:id="@+id/input_search"
                 android:layout_marginStart="40dp"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"

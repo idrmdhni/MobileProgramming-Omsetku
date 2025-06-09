@@ -13,15 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.adapter.ChooseProductListAdapter
-import com.k5.omsetku.R
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -33,11 +29,7 @@ import com.k5.omsetku.viewmodel.ProductViewModel
 class ChooseProductFragment: DialogFragment() {
     private lateinit var categoryViewModel: CategoryViewModel
     private lateinit var productViewModel: ProductViewModel
-    private lateinit var rvChooseProductList: RecyclerView
     private lateinit var chooseProductListAdapter: ChooseProductListAdapter
-    private lateinit var searchEditText: EditText
-    private lateinit var cancelButton: Button
-    private lateinit var addButton: Button
     private var _binding: PopupChooseProductBinding? = null
     private val binding get() = _binding!!
 
@@ -69,12 +61,6 @@ class ChooseProductFragment: DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        rvChooseProductList = view.findViewById(R.id.rv_choose_product_list)
-        searchEditText = view.findViewById(R.id.input_search_product)
-        cancelButton = view.findViewById(R.id.btn_cancel)
-        addButton = view.findViewById(R.id.btn_add)
-        searchEditText = view.findViewById(R.id.input_search_product)
 
         setupRecyclerView()
         setupListeners()
@@ -127,16 +113,26 @@ class ChooseProductFragment: DialogFragment() {
             chooseProductListAdapter.toggleSelection(product)
             updateAddButtonState()
         }
-        rvChooseProductList.layoutManager = LinearLayoutManager(context)
-        rvChooseProductList.adapter = chooseProductListAdapter
+        binding.rvChooseProductList.layoutManager = LinearLayoutManager(context)
+        binding.rvChooseProductList.adapter = chooseProductListAdapter
     }
 
     private fun setupListeners() {
-        cancelButton.setOnClickListener {
+        binding.btnCancel.setOnClickListener {
             dismiss()
         }
 
-        addButton.setOnClickListener {
+        binding.inputSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                chooseProductListAdapter.filter.filter(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        binding.btnAdd.setOnClickListener {
             val selectedItems = chooseProductListAdapter.getSelectedProducts
             if (selectedItems.isNotEmpty()) {
                 // Buat Bundle untuk menyimpan data
@@ -154,23 +150,13 @@ class ChooseProductFragment: DialogFragment() {
             }
         }
 
-        searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                chooseProductListAdapter.filter.filter(s.toString())
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
         updateAddButtonState()
     }
 
     private fun updateAddButtonState() {
         val selectedCount = chooseProductListAdapter.getSelectedProducts.size
-        addButton.isEnabled = selectedCount > 0
-        addButton.alpha = if (selectedCount > 0) 1.0f else 0.5f
+        binding.btnAdd.isEnabled = selectedCount > 0
+        binding.btnAdd.alpha = if (selectedCount > 0) 1.0f else 0.5f
     }
 
     override fun onStart() {
@@ -201,5 +187,10 @@ class ChooseProductFragment: DialogFragment() {
              params.dimAmount = 0.7f // 0.0f (transparan) to 1.0f (gelap total)
              window.setAttributes(params)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

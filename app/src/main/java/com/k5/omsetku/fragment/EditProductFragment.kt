@@ -117,7 +117,7 @@ class EditProductFragment : Fragment() {
                         result.onSuccess {
                             Toast.makeText(requireContext(), "Product has been successfully updated", Toast.LENGTH_SHORT).show()
 
-                            parentFragmentManager.setFragmentResult("category_update_request", Bundle.EMPTY)
+                            parentFragmentManager.setFragmentResult("product_update_request", Bundle.EMPTY)
                             parentFragmentManager.popBackStack()
                         }.onFailure { e ->
                             Toast.makeText(requireContext(), "Failed to update product: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -126,6 +126,11 @@ class EditProductFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
