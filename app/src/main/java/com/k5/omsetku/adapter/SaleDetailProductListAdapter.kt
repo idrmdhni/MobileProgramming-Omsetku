@@ -1,41 +1,64 @@
 package com.k5.omsetku.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.model.Product
-import com.k5.omsetku.R
+import com.k5.omsetku.databinding.SaleDetailProductListBinding
+import com.k5.omsetku.model.Category
+import com.k5.omsetku.model.SaleDetail
 import java.text.NumberFormat
 import java.util.Locale
 
 class SaleDetailProductListAdapter(
-    private val productList: List<Product>
 ): RecyclerView.Adapter<SaleDetailProductListAdapter.ProductViewHolder>() {
 
-    inner class ProductViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val displayProductName: TextView = itemView.findViewById(R.id.display_product_name)
-        val displayProductPrice: TextView = itemView.findViewById(R.id.display_product_price)
-        val displayProductCategory: TextView = itemView.findViewById(R.id.display_product_category)
+    var productList: List<Product> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+    var categoryList: List<Category> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+    var saleDetailList: List<SaleDetail> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
+    inner class ProductViewHolder(val binding: SaleDetailProductListBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bind(saleDetail: SaleDetail) {
+            val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+
+            val product = productList.find { it.productId == saleDetail.productId }
+
+            if (product != null) {
+                binding.displayProductName.text = product.productName
+                binding.displayProductPrice.text = rupiahFormat.format(product.productPrice)
+                binding.displayProductCategory.text = categoryList.find{ it.categoryId == product.categoryId }?.categoryName
+                binding.displayProductQuantity.text = saleDetail.quantity.toString()
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.sale_detail_product_list, parent, false)
+        val binding = SaleDetailProductListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return ProductViewHolder(itemView)
+        return ProductViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val currentProduct = productList[position]
+        val currentProduct = saleDetailList[position]
 
-        val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-
-        holder.displayProductName.text = currentProduct.productName
-        holder.displayProductCategory.text = currentProduct.categoryId
-        holder.displayProductPrice.text = rupiahFormat.format(currentProduct.productPrice)
+        holder.bind(currentProduct)
     }
 
-    override fun getItemCount() = productList.size
+    override fun getItemCount() = saleDetailList.size
 }

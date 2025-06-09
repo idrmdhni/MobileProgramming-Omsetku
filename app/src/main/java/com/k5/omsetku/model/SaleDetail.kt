@@ -7,6 +7,5 @@ data class SaleDetail(
     var saleDetailId: String = "",
     val productId: String = "",
     val quantity: Int = 0,
-    val unitPrice: Long = 0,
     val subTotal: Long = 0
 )

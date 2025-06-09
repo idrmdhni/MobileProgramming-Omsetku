@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.k5.omsetku.model.Product
 import com.k5.omsetku.model.Sale
+import com.k5.omsetku.model.SaleDetail
 import com.k5.omsetku.repository.ProductRepository
 import com.k5.omsetku.repository.SaleRepository
 import com.k5.omsetku.utils.LoadState
@@ -52,6 +53,14 @@ class SaleViewModel: ViewModel() {
 
     suspend fun addSale (sale: Sale): Result<Sale> {
         val result = saleRepo.addSale(sale)
+        if (result.isSuccess) {
+            refreshSales()
+        }
+        return result
+    }
+
+    suspend fun addSaleBatch (sale: Sale, saleDetailList: List<SaleDetail>): Result<Sale> {
+        val result = saleRepo.addSaleBatch(sale, saleDetailList)
         if (result.isSuccess) {
             refreshSales()
         }

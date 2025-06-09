@@ -7,10 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.google.android.material.button.MaterialButton
 import com.k5.omsetku.R
 import com.k5.omsetku.databinding.ProductListBinding
@@ -19,9 +16,16 @@ import java.text.NumberFormat
 import java.util.Locale
 
 class ProductAdapter(
-    private var productList: List<Product>,
     private val onItemActionListener: OnItemActionListener?
 ): RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+
+    var productList: List<Product> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     interface OnItemActionListener {
         fun onItemEditClicked(product: Product)
         fun onItemDeleteClicked(product: Product)
@@ -88,11 +92,4 @@ class ProductAdapter(
     }
 
     override fun getItemCount() = productList.size
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateProducts(newProduct: List<Product>) {
-        this.productList = newProduct
-        notifyDataSetChanged()
-    }
-
 }

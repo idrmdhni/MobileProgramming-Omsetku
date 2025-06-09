@@ -27,7 +27,7 @@ class SaleDetailViewModel: ViewModel() {
         loadSalesDetails()
     }
 
-    fun loadSalesDetails(saleId: String = "", forceRefresh: Boolean = false) {
+    fun loadSalesDetails(saleDetailId: String = "", forceRefresh: Boolean = false) {
         // Jika data sudah dimuat dan tidak ada paksaan refresh, jangan muat ulang
         if (isDataLoaded && !forceRefresh && _salesDetails.value is LoadState.Success) {
             return
@@ -36,7 +36,7 @@ class SaleDetailViewModel: ViewModel() {
         _salesDetails.value = LoadState.Loading
 
         viewModelScope.launch {
-            val result = saleDetailRepo.getSalesDetails(saleId)
+            val result = saleDetailRepo.getSalesDetails(saleDetailId)
             result.onSuccess { saleList ->
                 _salesDetails.value = LoadState.Success(saleList)
                 isDataLoaded = true // Tandai bahwa data sudah dimuat

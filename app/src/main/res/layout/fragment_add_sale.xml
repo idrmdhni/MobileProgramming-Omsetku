@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.AddSalesFragment"
+    tools:context=".fragment.AddSaleFragment"
     android:background="@color/background_light_secondary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -91,7 +91,7 @@
                             android:id="@+id/input_buyers_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="none"
+                            android:inputType="textPersonName"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,16 +100,20 @@
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         app:boxBackgroundMode="outline"
-                        app:boxBackgroundColor="@android:color/transparent"
+                        app:boxBackgroundColor="@color/background_light_secondary"
                         app:boxStrokeColor="@color/focused_gray_to_color2"
                         android:hint="Invoice Number"
                         android:layout_marginBottom="6dp">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/input_invoice_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="none"
-                            android:maxLines="1" />
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:longClickable="false"
+                            android:maxLines="1"
+                            android:textIsSelectable="false" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -117,7 +121,7 @@
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         app:boxBackgroundMode="outline"
-                        app:boxBackgroundColor="@android:color/transparent"
+                        app:boxBackgroundColor="@color/background_light_secondary"
                         app:boxStrokeColor="@color/focused_gray_to_color2"
                         android:hint="Transanction Date"
                         android:layout_marginBottom="6dp">
@@ -125,7 +129,10 @@
                             android:id="@+id/input_transaction_date"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="none"
+                            android:focusable="false"
+                            android:longClickable="false"
+                            android:cursorVisible="false"
+                            android:textIsSelectable="false"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -155,14 +162,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/backgroundlighttertiary_effect_rounded1"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="2dp"
                         android:paddingVertical="8dp"
                         android:gravity="center"
                         android:clickable="true"
                         android:focusable="true">
                         <ImageView
-                            android:layout_width="42dp"
-                            android:layout_height="42dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:src="@drawable/add_circle_24px"
                             app:tint="@color/pressed_color2_to_secondaryvariant_effect" />
 
@@ -174,6 +181,14 @@
                             android:textColor="@color/pressed_color2_to_secondaryvariant_effect"
                             android:textSize="16dp"/>
                     </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_save"
+                        android:text="Save"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/form_wrapper"
+                        style="@style/btn_form"/>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

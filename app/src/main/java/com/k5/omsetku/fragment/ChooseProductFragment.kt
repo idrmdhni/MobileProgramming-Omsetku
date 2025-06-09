@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -21,13 +20,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.k5.omsetku.model.Product
 import com.k5.omsetku.adapter.ChooseProductListAdapter
 import com.k5.omsetku.R
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.k5.omsetku.databinding.FragmentProductBinding
 import com.k5.omsetku.databinding.PopupChooseProductBinding
 import com.k5.omsetku.utils.LoadState
 import com.k5.omsetku.viewmodel.CategoryViewModel
@@ -47,6 +44,7 @@ class ChooseProductFragment: DialogFragment() {
     companion object {
         const val REQUEST_KEY_SELECTED_PRODUCTS = "request_key_selected_products"
         const val BUNDLE_KEY_SELECTED_PRODUCTS = "bundle_key_selected_products"
+        const val BUNDLE_KEY_CATEGORIES = "bundle_key_categories"
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -81,6 +79,12 @@ class ChooseProductFragment: DialogFragment() {
         setupRecyclerView()
         setupListeners()
 
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            productViewModel.refreshProducts()
+            categoryViewModel.refreshCategories()
+        }
+
         productViewModel.products.observe(viewLifecycleOwner, Observer { loadState ->
             when (loadState) {
                 is LoadState.Loading -> {
@@ -93,7 +97,7 @@ class ChooseProductFragment: DialogFragment() {
                     binding.progressBar.visibility = View.GONE
                     binding.rvChooseProductList.visibility = View.VISIBLE
                     binding.swipeRefreshLayout.isRefreshing = false
-                    chooseProductListAdapter.updateProducts(loadState.data)
+                    chooseProductListAdapter.productList = loadState.data
                 }
                 is LoadState.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -109,7 +113,7 @@ class ChooseProductFragment: DialogFragment() {
             when (loadState) {
                 is LoadState.Loading -> {}
                 is LoadState.Success -> {
-                    chooseProductListAdapter.updateCategories(loadState.data)
+                    chooseProductListAdapter.categoryList = loadState.data
                 }
                 is LoadState.Error -> {
                     Toast.makeText(requireContext(), "Failed to fetch categories: ${loadState.message}", Toast.LENGTH_SHORT).show()
@@ -119,7 +123,7 @@ class ChooseProductFragment: DialogFragment() {
     }
 
     private fun setupRecyclerView() {
-        chooseProductListAdapter = ChooseProductListAdapter(emptyList(), emptyList()) { product ->
+        chooseProductListAdapter = ChooseProductListAdapter { product ->
             chooseProductListAdapter.toggleSelection(product)
             updateAddButtonState()
         }
@@ -133,11 +137,12 @@ class ChooseProductFragment: DialogFragment() {
         }
 
         addButton.setOnClickListener {
-            val selectedItems = chooseProductListAdapter.getSelectedProducts()
+            val selectedItems = chooseProductListAdapter.getSelectedProducts
             if (selectedItems.isNotEmpty()) {
                 // Buat Bundle untuk menyimpan data
                 val resultBundle = Bundle().apply {
                     putParcelableArrayList(BUNDLE_KEY_SELECTED_PRODUCTS, ArrayList(selectedItems))
+                    putParcelableArrayList(BUNDLE_KEY_CATEGORIES, ArrayList(chooseProductListAdapter.getCategories()))
                 }
                 // Kirim hasil ke Fragment sebelumnya
                 setFragmentResult(REQUEST_KEY_SELECTED_PRODUCTS, resultBundle)
@@ -163,7 +168,7 @@ class ChooseProductFragment: DialogFragment() {
     }
 
     private fun updateAddButtonState() {
-        val selectedCount = chooseProductListAdapter.getSelectedProducts().size
+        val selectedCount = chooseProductListAdapter.getSelectedProducts.size
         addButton.isEnabled = selectedCount > 0
         addButton.alpha = if (selectedCount > 0) 1.0f else 0.5f
     }
@@ -172,6 +177,7 @@ class ChooseProductFragment: DialogFragment() {
         super.onStart()
         dialog?.window?.let { window ->
             val displayMetrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
             activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
             val screenWidth = displayMetrics.widthPixels
             val screenHeight = displayMetrics.heightPixels

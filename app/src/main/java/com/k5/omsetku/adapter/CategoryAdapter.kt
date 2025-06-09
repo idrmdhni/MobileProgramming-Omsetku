@@ -7,19 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.google.android.material.button.MaterialButton
 import com.k5.omsetku.R
 import com.k5.omsetku.databinding.CategoryListBinding
 import com.k5.omsetku.model.Category
 
 class CategoryAdapter(
-    private var categoryList: List<Category>,
     private var onItemActionListener: OnItemActionListener?
 ): RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
+
+    var categoryList: List<Category>  = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     interface OnItemActionListener {
         fun onItemEditClicked(category: Category)
         fun onItemDeleteClicked(category: Category)
@@ -37,6 +41,7 @@ class CategoryAdapter(
         return CategoryViewHolder(binding)
     }
 
+    @SuppressLint("InflateParams")
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val currentItem = categoryList[position]
 
@@ -80,11 +85,4 @@ class CategoryAdapter(
     }
 
     override fun getItemCount(): Int = categoryList.size
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateCategories(newCategories: List<Category>) {
-        this.categoryList = newCategories
-        notifyDataSetChanged()
-    }
-
 }

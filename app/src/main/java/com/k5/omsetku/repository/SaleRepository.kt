@@ -3,6 +3,7 @@ package com.k5.omsetku.repository
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
 import com.k5.omsetku.model.Sale
+import com.k5.omsetku.model.SaleDetail
 import com.k5.omsetku.utils.FirebaseUtils
 import kotlinx.coroutines.tasks.await
 
@@ -29,6 +30,30 @@ class SaleRepository {
         }
     }
 
+    // CREATE
+    suspend fun addSaleBatch(sale: Sale, saleDetailList: List<SaleDetail>): Result<Sale> {
+        val uid = FirebaseUtils.getCurrentUserId()
+        if (uid == null) {
+            return Result.failure(IllegalStateException("User is not logged in!"))
+        }
+
+        val batch = FirebaseUtils.db.batch()
+        val saleDocRef = getSalesCollection(uid).document()
+        batch.set(saleDocRef, sale)
+
+        for (saleDetail in saleDetailList) {
+            val saleDetailDocRef = saleDocRef.collection("sales_details").document()
+            batch.set(saleDetailDocRef, saleDetail)
+        }
+
+        return try {
+            batch.commit().await()
+            Result.success(sale)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     // READ
     suspend fun getSales(): Result<List<Sale>> {
         val uid = FirebaseUtils.getCurrentUserId()
@@ -38,7 +63,7 @@ class SaleRepository {
 
         return try {
             val querySnapshot = getSalesCollection(uid)
-                .orderBy("saleDate", Query.Direction.DESCENDING)
+                .orderBy("purchaseDate", Query.Direction.DESCENDING)
                 .get().await()
             val sales = querySnapshot.documents.mapNotNull { document ->
                 document.toObject(Sale::class.java)?.apply { this.saleId = document.id }
@@ -63,10 +88,10 @@ class SaleRepository {
                 if (sale != null) {
                     Result.success(sale)
                 } else {
-                    Result.failure(NoSuchElementException("Failed to convert sale!"))
+                    Result.failure(NoSuchElementException("Failed to convert sale"))
                 }
             } else {
-                Result.failure(NoSuchElementException("Sale not found!"))
+                Result.failure(NoSuchElementException("Sale not found"))
             }
         } catch (e: Exception) {
             Result.failure(e)

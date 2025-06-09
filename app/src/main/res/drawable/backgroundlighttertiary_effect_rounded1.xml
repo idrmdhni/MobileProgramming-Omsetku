@@ -2,5 +2,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/pressed_backgroundlightsecondary_to_backgroundlighttertiary_effect"/>
-    <corners android:radius="16dp"/>
+    <corners android:radius="64dp"/>
 </shape>

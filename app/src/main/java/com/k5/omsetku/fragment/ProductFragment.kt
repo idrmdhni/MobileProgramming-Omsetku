@@ -42,7 +42,7 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        productAdapter = ProductAdapter(emptyList(), this)
+        productAdapter = ProductAdapter(this)
         binding.rvProduct.adapter = productAdapter
 
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -61,7 +61,7 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
                     binding.progressBar.visibility = View.GONE
                     binding.rvProduct.visibility = View.VISIBLE
                     binding.swipeRefreshLayout.isRefreshing = false
-                    productAdapter.updateProducts(loadState.data)
+                    productAdapter.productList = loadState.data
                 }
                 is LoadState.Error -> {
                     binding.progressBar.visibility = View.GONE
@@ -102,7 +102,7 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
 
     override fun onItemDeleteClicked(product: Product) {
         lifecycleScope.launch {
-            val result = ProductViewModel().deleteProduct(product.productId)
+            val result = productViewModel.deleteProduct(product.productId)
 
             result.onSuccess {
                 Toast.makeText(requireContext(), "Product deleted successfully", Toast.LENGTH_SHORT).show()

@@ -5,38 +5,38 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.recyclerview.widget.RecyclerView
-import com.k5.omsetku.R
-import com.k5.omsetku.model.Product
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.k5.omsetku.adapter.SaleDetailProductListAdapter
-import com.k5.omsetku.utils.LoadFragment
+import com.k5.omsetku.databinding.FragmentSaleDetailBinding
+import com.k5.omsetku.model.Sale
+import com.k5.omsetku.utils.LoadState
+import com.k5.omsetku.viewmodel.CategoryViewModel
+import com.k5.omsetku.viewmodel.ProductViewModel
+import com.k5.omsetku.viewmodel.SaleDetailViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SaleDetailFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SaleDetailFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    private lateinit var rvSalesDetailsProductList: RecyclerView
+    private lateinit var categoryViewModel: CategoryViewModel
+    private lateinit var productViewModel: ProductViewModel
+    private lateinit var saleDetailViewModel: SaleDetailViewModel
     private lateinit var saleDetailProductListAdapter: SaleDetailProductListAdapter
-    private lateinit var productList: ArrayList<Product>
+    private var _binding: FragmentSaleDetailBinding? = null
+    private val binding get() = _binding!!
+    private var sale: Sale? = null
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        arguments?.let { bundle ->
+            sale = bundle.getParcelable(ARG_SALE)
         }
+
+        productViewModel = ViewModelProvider(this)[ProductViewModel::class.java]
+        categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
+        saleDetailViewModel = ViewModelProvider(this)[SaleDetailViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -44,50 +44,90 @@ class SaleDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sales_details, container, false)
+        _binding = FragmentSaleDetailBinding.inflate(inflater, container, false)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnBackToSales: LinearLayout = view.findViewById(R.id.btn_back_to_sales)
-        btnBackToSales.setOnClickListener {
-            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment,
-                SaleFragment())
+        binding.btnBackToSales.setOnClickListener {
+            parentFragmentManager.popBackStack()
         }
 
-        productList = ArrayList()
-        productList.add(Product("1", "Lenovo LOQ 15", 69, 11800000, "laptop"))
-        productList.add(Product("2", "Asus TUF A15", 69, 9210000, "laptop"))
-        productList.add(Product("3", "MSI Thin 15", 69, 8820000, "laptop"))
-        productList.add(Product("4", "MacBook Air M4", 69, 16700000, "laptop"))
-        productList.add(Product("5", "Iphone 16", 69, 15000000, "smartphone"))
-        productList.add(Product("6", "Samsung S24", 69, 9060000, "smartphone"))
-        productList.add(Product("7", "Xiaomi G24i", 69, 1300000, "monitor"))
-        productList.add(Product("8", "Vortex Mono 75", 69, 312000, "accessories"))
+        saleDetailProductListAdapter = SaleDetailProductListAdapter()
+        binding.rvSalesDetailsProductList.adapter = saleDetailProductListAdapter
 
-        rvSalesDetailsProductList = view.findViewById(R.id.rv_sales_details_product_list)
-        saleDetailProductListAdapter = SaleDetailProductListAdapter(productList)
-        rvSalesDetailsProductList.adapter = saleDetailProductListAdapter
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val purchaseDate = sale?.purchaseDate
+
+        binding.inputBuyersName.setText(sale?.buyersName)
+        binding.inputInvoiceNumber.setText(sale?.invoiceNumber)
+        if (purchaseDate != null){
+            binding.inputTransactionDate.setText(dateFormat.format(purchaseDate.toDate()))
+        } else {
+            binding.inputTransactionDate.setText("")
+        }
+
+        saleDetailViewModel.loadSalesDetails(sale?.saleId ?: "")
+
+        saleDetailViewModel.salesDetails.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.rvSalesDetailsProductList.visibility = View.GONE
+                }
+                is LoadState.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvSalesDetailsProductList.visibility = View.VISIBLE
+                    saleDetailProductListAdapter.saleDetailList = loadState.data
+                }
+                is LoadState.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvSalesDetailsProductList.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Failed to fetch sale: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        productViewModel.products.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {}
+                is LoadState.Success -> {
+                    saleDetailProductListAdapter.productList = loadState.data
+                }
+                is LoadState.Error -> {
+                    Toast.makeText(requireContext(), "Failed to fetch products: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        categoryViewModel.categories.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {}
+                is LoadState.Success -> {
+                    saleDetailProductListAdapter.categoryList = loadState.data
+                }
+                is LoadState.Error -> {
+                    Toast.makeText(requireContext(), "Failed to fetch categories: ${loadState.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SalesDetailsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+        private const val ARG_SALE = "sale"
+
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SaleDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance(sale: Sale): SaleDetailFragment {
+            val fragment = SaleDetailFragment()
+            val args = Bundle()
+            args.putParcelable(ARG_SALE, sale)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

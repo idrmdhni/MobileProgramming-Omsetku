@@ -44,7 +44,7 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        categoryAdapter = CategoryAdapter(emptyList(), this)
+        categoryAdapter = CategoryAdapter(this)
         binding.rvCategory.adapter = categoryAdapter
 
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -63,7 +63,7 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
                     binding.progressBar.visibility = View.GONE
                     binding.rvCategory.visibility = View.VISIBLE
                     binding.swipeRefreshLayout.isRefreshing = false
-                    categoryAdapter.updateCategories(loadState.data)
+                    categoryAdapter.categoryList = loadState.data
                 }
                 is LoadState.Error -> {
                     binding.progressBar.visibility = View.GONE

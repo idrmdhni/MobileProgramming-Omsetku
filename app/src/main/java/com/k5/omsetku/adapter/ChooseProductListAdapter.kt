@@ -2,31 +2,42 @@ package com.k5.omsetku.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.k5.omsetku.model.Product
-import com.k5.omsetku.R
 import java.text.NumberFormat
 import java.util.Locale
 import androidx.core.graphics.toColorInt
-import androidx.lifecycle.ViewModelProvider
 import com.k5.omsetku.databinding.ChooseProductListBinding
-import com.k5.omsetku.databinding.PopupChooseProductBinding
 import com.k5.omsetku.model.Category
-import com.k5.omsetku.viewmodel.CategoryViewModel
 
 class ChooseProductListAdapter(
-    private var productList: List<Product>,
-    private var categoryList: List<Category>,
     private val onItemClick: (Product) -> Unit
 ): RecyclerView.Adapter<ChooseProductListAdapter.ProductViewHolder>(), Filterable {
-    private var filteredProducts: List<Product> = productList
+
+    var productList: List<Product> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            this.filteredProducts = value
+            notifyDataSetChanged()
+        }
+    var categoryList: List<Category> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     private val selectedProductIds = mutableSetOf<String>()
+    private var filteredProducts: List<Product> = productList
+
+
+    val getSelectedProducts: List<Product> get() {
+        return productList.filter { selectedProductIds.contains(it.productId) }
+    }
 
     inner class ProductViewHolder(val binding: ChooseProductListBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
@@ -74,21 +85,8 @@ class ChooseProductListAdapter(
         }
     }
 
-    fun getSelectedProducts(): List<Product> {
-        return filteredProducts.filter { selectedProductIds.contains(it.productId) }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateProducts(newItems: List<Product>) {
-        this.productList = newItems
-        this.filteredProducts = newItems
-        notifyDataSetChanged()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateCategories(newItems: List<Category>) {
-        this.categoryList = newItems
-        notifyDataSetChanged()
+    fun getCategories(): List<Category> {
+        return categoryList
     }
 
     @SuppressLint("NotifyDataSetChanged")

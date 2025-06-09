@@ -1,51 +1,60 @@
 package com.k5.omsetku.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.k5.omsetku.R
+import com.k5.omsetku.databinding.SaleListBinding
 import com.k5.omsetku.model.Sale
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 class SaleAdapter(
-    private val saleList: List<Sale>,
     private val onItemActionListener: OnItemActionListener?
 ): RecyclerView.Adapter<SaleAdapter.SalesViewHolder>() {
+
+    var saleList: List<Sale> = emptyList()
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     interface OnItemActionListener {
-        fun onSalesDetailsClicked(sale: Sale, position: Int)
+        fun onSalesDetailsClicked(sale: Sale)
     }
 
-    inner class SalesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val displayInvoiceNumber: TextView = itemView.findViewById(R.id.display_invoice_number)
-        val displayPurchaseDate: TextView = itemView.findViewById(R.id.display_purchase_date)
-        val displayTotalPurchase: TextView = itemView.findViewById(R.id.display_total_purchase)
+    inner class SalesViewHolder(val binding: SaleListBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bind(sale: Sale) {
+            val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-        val btnDetails: LinearLayout = itemView.findViewById(R.id.btn_details)
+            if (sale.purchaseDate != null) {
+                binding.displayPurchaseDate.text = dateFormat.format(sale.purchaseDate.toDate())
+            } else {
+                binding.displayPurchaseDate.text = ""
+            }
+
+            binding.displayInvoiceNumber.text = sale.invoiceNumber
+            binding.displayTotalPurchase.text = rupiahFormat.format(sale.totalPurchase)
+
+            binding.btnDetails.setOnClickListener {
+                onItemActionListener?.onSalesDetailsClicked(sale)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SalesViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.sale_list, parent, false)
+        val binding = SaleListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return SalesViewHolder(itemView)
+        return SalesViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: SalesViewHolder, position: Int) {
-        val currentItem = saleList[position]
+        val currentSale = saleList[position]
 
-        val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-
-        holder.displayInvoiceNumber.text = currentItem.invoiceNumber
-        holder.displayPurchaseDate.text = currentItem.purchaseDate.toString()
-        holder.displayTotalPurchase.text = rupiahFormat.format(currentItem.totalPurchase)
-
-        holder.btnDetails.setOnClickListener {
-            onItemActionListener?.onSalesDetailsClicked(currentItem, position)
-        }
+        holder.bind(currentSale)
     }
 
     override fun getItemCount() = saleList.size

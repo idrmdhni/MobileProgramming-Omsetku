@@ -6,6 +6,8 @@ import com.k5.omsetku.utils.FirebaseUtils
 import kotlinx.coroutines.tasks.await
 
 class CategoryRepository {
+    private val productRepo: ProductRepository by lazy { ProductRepository() }
+
     private fun getCategoriesCollection(uid: String): CollectionReference {
         return FirebaseUtils.db.collection("users")
             .document(uid)
@@ -65,7 +67,7 @@ class CategoryRepository {
                 if (category != null) {
                     Result.success(category)
                 } else {
-                    Result.failure(NoSuchElementException("Failed to convert category!"))
+                    Result.failure(NoSuchElementException("Failed to convert category"))
                 }
             } else {
                 Result.failure(NoSuchElementException("Category not found!"))
@@ -97,10 +99,18 @@ class CategoryRepository {
         val uid = FirebaseUtils.getCurrentUserId()
 
         if (uid == null) {
-            return Result.failure(IllegalStateException("Pengguna belum login!"))
+            return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
         return try {
+            // Periksa apakah ada produk yang masih menggunakan kategori ini
+            val hasProductsResult = productRepo.hasProductsInCategory(categoryId)
+            if (hasProductsResult.isSuccess && hasProductsResult.getOrNull() == true) {
+                return Result.failure(IllegalStateException("The category cannot be deleted because it is still in use by the product!"))
+            } else if (hasProductsResult.isFailure) {
+                return Result.failure(hasProductsResult.exceptionOrNull() ?: Exception("Failed to check category dependency"))
+            }
+
             getCategoriesCollection(uid).document(categoryId).delete().await()
             Result.success(Unit)
         } catch (e: Exception) {

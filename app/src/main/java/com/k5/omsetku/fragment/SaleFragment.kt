@@ -5,39 +5,29 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.k5.omsetku.R
 import com.k5.omsetku.model.Sale
 import com.k5.omsetku.adapter.SaleAdapter
+import com.k5.omsetku.databinding.FragmentSaleBinding
 import com.k5.omsetku.utils.LoadFragment
-import java.util.ArrayList
+import com.k5.omsetku.utils.LoadState
+import com.k5.omsetku.viewmodel.SaleViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SaleFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
-    private lateinit var recyclerViewSales: RecyclerView
+    private lateinit var saleViewModel: SaleViewModel
     private lateinit var saleAdapter: SaleAdapter
-    private lateinit var saleList: ArrayList<Sale>
-
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentSaleBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+        saleViewModel = ViewModelProvider(this)[SaleViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -45,49 +35,62 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sale, container, false)
+        _binding = FragmentSaleBinding.inflate(inflater, container, false)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerViewSales = view.findViewById(R.id.rv_sales)
+        saleAdapter = SaleAdapter(this)
+        binding.rvSales.adapter = saleAdapter
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            saleViewModel.refreshSales()
+        }
 
-        saleAdapter = SaleAdapter(emptyList(), this)
-        recyclerViewSales.adapter = saleAdapter
+        saleViewModel.sales.observe(viewLifecycleOwner, Observer { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (!binding.swipeRefreshLayout.isRefreshing) {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.rvSales.visibility = View.GONE
+                    }
+                }
+                is LoadState.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvSales.visibility = View.VISIBLE
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    saleAdapter.saleList = loadState.data
 
-        val btnAddSales: FloatingActionButton = view.findViewById(R.id.btn_add_sales)
-        btnAddSales.setOnClickListener {
-            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, AddSalesFragment())
+                    val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+                    var totalSales: Long = 0
+                    for (totalPurhcase in saleAdapter.saleList) {
+                        totalSales += totalPurhcase.totalPurchase
+                    }
+
+                    binding.inputTotalTransaction.setText(saleAdapter.itemCount.toString())
+                    binding.inputTotalSales.setText(rupiahFormat.format(totalSales))
+                }
+                is LoadState.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rvSales.visibility = View.GONE
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(requireContext(), "Failed to fetch products: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        binding.btnAddSales.setOnClickListener {
+            LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, AddSaleFragment())
         }
     }
 
-    override fun onSalesDetailsClicked(
-        sale: Sale,
-        position: Int
-    ) {
-        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, SaleDetailFragment())
-    }
+    override fun onSalesDetailsClicked(sale: Sale) {
+        val saleDetailFragment = SaleDetailFragment.newInstance(sale)
 
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SalesFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SaleFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, saleDetailFragment)
     }
 }

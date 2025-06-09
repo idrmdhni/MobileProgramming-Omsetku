@@ -10,7 +10,7 @@ import com.k5.omsetku.utils.LoadState
 import kotlinx.coroutines.launch
 
 class ProductViewModel: ViewModel() {
-    private val productRepo = ProductRepository()
+    private val productRepo by lazy { ProductRepository() }
 
     // MutableLiveData untuk mengelola state data (loading, success, error)
     private val _products =  MutableLiveData<LoadState<List<Product>>>()
