@@ -28,17 +28,18 @@
                 android:textStyle="bold"
                 android:textColor="@color/black" />
             <TextView
-                android:id="@+id/display_product_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:text="Category"
-                android:textSize="12sp"/>
-            <TextView
                 android:id="@+id/display_product_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rp000.000.000" />
+                android:layout_marginBottom="4dp"
+                android:text="Rp0.000.000"
+                android:textSize="12sp"/>
+            <TextView
+                android:id="@+id/display_product_subtotal_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total: Rp000.000.000"
+                android:textColor="@color/color1" />
         </LinearLayout>
 
         <LinearLayout

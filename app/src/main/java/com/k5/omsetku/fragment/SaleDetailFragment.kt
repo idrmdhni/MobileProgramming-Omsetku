@@ -12,14 +12,12 @@ import com.k5.omsetku.adapter.SaleDetailProductListAdapter
 import com.k5.omsetku.databinding.FragmentSaleDetailBinding
 import com.k5.omsetku.model.Sale
 import com.k5.omsetku.utils.LoadState
-import com.k5.omsetku.viewmodel.CategoryViewModel
 import com.k5.omsetku.viewmodel.ProductViewModel
 import com.k5.omsetku.viewmodel.SaleDetailViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class SaleDetailFragment : Fragment() {
-    private lateinit var categoryViewModel: CategoryViewModel
     private lateinit var productViewModel: ProductViewModel
     private lateinit var saleDetailViewModel: SaleDetailViewModel
     private lateinit var saleDetailProductListAdapter: SaleDetailProductListAdapter
@@ -35,7 +33,6 @@ class SaleDetailFragment : Fragment() {
         }
 
         productViewModel = ViewModelProvider(this)[ProductViewModel::class.java]
-        categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
         saleDetailViewModel = ViewModelProvider(this)[SaleDetailViewModel::class.java]
     }
 
@@ -101,18 +98,6 @@ class SaleDetailFragment : Fragment() {
                 is LoadState.Error -> {
                     Toast.makeText(requireContext(), "Failed to fetch products: ${loadState.message}",
                         Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
-
-        categoryViewModel.categories.observe(viewLifecycleOwner, Observer { loadState ->
-            when (loadState) {
-                is LoadState.Loading -> {}
-                is LoadState.Success -> {
-                    saleDetailProductListAdapter.categoryList = loadState.data
-                }
-                is LoadState.Error -> {
-                    Toast.makeText(requireContext(), "Failed to fetch categories: ${loadState.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         })

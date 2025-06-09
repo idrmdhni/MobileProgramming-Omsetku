@@ -103,17 +103,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="6dp">
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1.1"
                     android:background="@drawable/white_rounded2"
                     android:orientation="vertical"
                     android:paddingTop="10dp"
                     android:paddingBottom="8dp"
-                    android:paddingHorizontal="12dp"
-                    android:layout_marginEnd="8dp">
-
+                    android:paddingHorizontal="12dp">
                     <TextView
                         android:layout_marginStart="4dp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -125,8 +123,6 @@
 
                     <EditText
                         android:id="@+id/input_total_sales"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:backgroundTint="@color/focused_gray_to_color2"
@@ -135,7 +131,7 @@
                         android:cursorVisible="false"
                         android:textIsSelectable="false"
                         android:maxLines="1" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -146,7 +142,6 @@
                     android:paddingTop="10dp"
                     android:paddingBottom="8dp"
                     android:paddingHorizontal="12dp">
-
                     <TextView
                         android:layout_marginStart="4dp"
                         android:layout_width="wrap_content"

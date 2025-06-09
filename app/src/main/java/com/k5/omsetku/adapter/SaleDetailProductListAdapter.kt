@@ -20,12 +20,7 @@ class SaleDetailProductListAdapter(
             field = value
             notifyDataSetChanged()
         }
-    var categoryList: List<Category> = emptyList()
-        @SuppressLint("NotifyDataSetChanged")
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+
     var saleDetailList: List<SaleDetail> = emptyList()
         @SuppressLint("NotifyDataSetChanged")
         set(value) {
@@ -41,10 +36,10 @@ class SaleDetailProductListAdapter(
 
             if (product != null) {
                 binding.displayProductName.text = product.productName
-                binding.displayProductPrice.text = rupiahFormat.format(product.productPrice)
-                binding.displayProductCategory.text = categoryList.find{ it.categoryId == product.categoryId }?.categoryName
-                binding.displayProductQuantity.text = saleDetail.quantity.toString()
             }
+            binding.displayProductPrice.text = rupiahFormat.format(saleDetail.productPrice)
+            binding.displayProductSubtotalPrice.text = "Total: ${rupiahFormat.format(saleDetail.subTotal)}"
+            binding.displayProductQuantity.text = saleDetail.quantity.toString()
         }
     }
 

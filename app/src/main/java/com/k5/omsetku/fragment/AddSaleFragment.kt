@@ -117,6 +117,7 @@ class AddSaleFragment : Fragment() {
             for (product in productList) {
                 saleDetailList.add(SaleDetail(
                     productId = product.productId,
+                    productPrice = product.productPrice,
                     quantity = addSaleProductListAdapter.productQuantityList[counter],
                     subTotal = addSaleProductListAdapter.productQuantityList[counter] * product.productPrice
                 ))
