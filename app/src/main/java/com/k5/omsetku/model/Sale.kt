@@ -12,7 +12,9 @@ data class Sale(
     var saleId: String = "",
     val buyersName: String = "",
     val invoiceNumber: String = "",
+    val totalPurchase: Long = 0,
     @ServerTimestamp
     val purchaseDate: Timestamp? = null,
-    val totalPurchase: Long = 0,
+    val month: Int? = null,
+    val year: Int? = null,
 ): Parcelable

@@ -3,6 +3,8 @@ package com.k5.omsetku.fragment
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,31 +13,46 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.k5.omsetku.LogInActivity
 import com.k5.omsetku.R
 import com.k5.omsetku.databinding.FragmentHomeBinding
+import com.k5.omsetku.model.Sale
 import com.k5.omsetku.utils.LoadFragment
+import com.k5.omsetku.utils.LoadState
+import com.k5.omsetku.viewmodel.HomeViewModel
+import java.text.NumberFormat
+import java.util.Locale
 import kotlin.jvm.java
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
-    private var userProfileListener: ListenerRegistration? = null
+
+    private val todaySaleList: ArrayList<Sale> = ArrayList()
+    private val thisWeekSaleList: ArrayList<Sale> = ArrayList()
+    private val thisMonthSaleList: ArrayList<Sale> = ArrayList()
+
+    private var todaySale: Long = 0
+    private var thisWeekSale: Long = 0
+    private var thisMonthSale: Long = 0
+
+    private lateinit var homeViewModel: HomeViewModel
+    val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Inisialisasi ViewModel di onCreate() Fragment
+        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -43,6 +60,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Tangani tombol kembali fisik
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 showExitConfirmationDialog()
@@ -50,82 +68,174 @@ class HomeFragment : Fragment() {
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
 
-        auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+        // Set listener untuk interaksi UI
+        binding.account.setOnClickListener {
+            LoadFragment.loadChildFragment(
+                parentFragmentManager,
+                R.id.host_fragment,
+                AccountFragment()
+            )
+        }
 
-        val account: ImageView = binding.account
-
-        account.setOnClickListener { LoadFragment.loadChildFragment(
-            parentFragmentManager,
-            R.id.host_fragment,
-            AccountFragment()
-        ) }
-
+        // Amati LiveData dari ViewModel
+        observeViewModel()
     }
 
-    override fun onResume() {
-        super.onResume()
-        // Mulai mendengarkan data saat fragment aktif
-        setupFirestoreListeners()
-    }
+    private fun observeViewModel() {
+        // Amati perubahan pada accountName
+        homeViewModel.accountName.observe(viewLifecycleOwner) { name ->
+            binding.accountName.text = name
+        }
 
-    override fun onPause() {
-        super.onPause()
-        // Hentikan mendengarkan data saat fragment tidak aktif
-        removeFirestoreListeners()
+        // Amati permintaan navigasi ke LoginActivity
+        homeViewModel.navigateToLogin.observe(viewLifecycleOwner) { navigate ->
+            if (navigate) {
+                Toast.makeText(requireContext(), "Anda harus login.", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(requireContext(), LogInActivity::class.java))
+                requireActivity().finish()
+                homeViewModel.onLoginNavigationHandled() // Beri tahu ViewModel bahwa navigasi sudah ditangani
+            }
+        }
+
+        // Amati pesan kesalahan
+        homeViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            homeViewModel.loadSalesToday()
+            homeViewModel.loadSalesThisWeek()
+            homeViewModel.loadSalesThisMonth()
+        }
+
+        homeViewModel.products.observe(viewLifecycleOwner) { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (!binding.swipeRefreshLayout.isRefreshing) {
+                        binding.displayTotalItems.text = "Loading..."
+                    }
+                }
+                is LoadState.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    binding.displayTotalItems.text = loadState.data.size.toString()
+                }
+                is LoadState.Error -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    binding.displayTotalItems.text = "Error"
+
+                    Toast.makeText(requireContext(), "Failed to fetch sales: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        homeViewModel.salesToday.observe(viewLifecycleOwner) { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (!binding.swipeRefreshLayout.isRefreshing) {
+                        binding.displayTodaySale.text = "Loading..."
+                    }
+                }
+                is LoadState.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    var tempTodaySale: Long = 0
+                    for (sale in loadState.data) {
+                        tempTodaySale += sale.totalPurchase
+                    }
+                    todaySale = tempTodaySale
+
+                    val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+                    binding.displayTodaySale.text = rupiahFormat.format(todaySale)
+                }
+                is LoadState.Error -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    binding.displayTodaySale.text = "Error"
+
+                    Toast.makeText(requireContext(), "Failed to fetch sales: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        homeViewModel.salesThisWeek.observe(viewLifecycleOwner) { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (!binding.swipeRefreshLayout.isRefreshing) {
+                        binding.displayThisWeekSale.text = "Loading..."
+                    }
+                }
+                is LoadState.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    var tempThisWeekSale: Long = 0
+                    for (sale in loadState.data) {
+                        tempThisWeekSale += sale.totalPurchase
+                    }
+                    thisWeekSale = tempThisWeekSale
+
+                    binding.displayThisWeekSale.text = rupiahFormat.format(thisWeekSale)
+                }
+                is LoadState.Error -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    binding.displayThisWeekSale.text = "Error"
+
+                    Toast.makeText(requireContext(), "Failed to fetch sales: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        homeViewModel.salesThisMonth.observe(viewLifecycleOwner) { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (!binding.swipeRefreshLayout.isRefreshing) {
+                        binding.displayThisMonthSale.text = "Loading..."
+                    }
+                }
+                is LoadState.Success -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    var tempThisMonthSale: Long = 0
+                    for (sale in loadState.data) {
+                        tempThisMonthSale += sale.totalPurchase
+                    }
+                    thisMonthSale = tempThisMonthSale
+
+                    binding.displayThisMonthSale.text = rupiahFormat.format(thisMonthSale)
+                }
+                is LoadState.Error -> {
+                    binding.swipeRefreshLayout.isRefreshing = false
+
+                    binding.displayThisMonthSale.text = "Error"
+
+                    Toast.makeText(requireContext(), "Failed to fetch sales: ${loadState.message}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        removeFirestoreListeners() // Pastikan listener dilepas juga saat view dihancurkan
         _binding = null
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun setupFirestoreListeners() {
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            val userUid = currentUser.uid
-
-            // Listener untuk profil pengguna
-            userProfileListener = db.collection("users").document(userUid)
-                .addSnapshotListener { documentSnapshot, e ->
-                    if (e != null) {
-                        Toast.makeText(requireContext(), "Failed to load profile: ${e.message}", Toast.LENGTH_SHORT).show()
-                        return@addSnapshotListener
-                    }
-
-                    if (documentSnapshot != null && documentSnapshot.exists()) {
-                        val name = documentSnapshot.getString("name")
-                        val email = documentSnapshot.getString("email")
-                        binding.accountName.text = name ?: email
-                    } else {
-                        binding.accountName.text = "Anonym!"
-                    }
-                }
-        } else {
-            // Jika tidak ada pengguna yang login, arahkan kembali ke LoginActivity
-            Toast.makeText(requireContext(), "Anda harus login.", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(requireContext(), LogInActivity::class.java))
-            requireActivity().finish() // Penting: tutup activity saat ini
-        }
-    }
-
-    private fun removeFirestoreListeners() {
-        userProfileListener?.remove() // Hentikan listener profil
-        userProfileListener = null
-    }
-
     private fun showExitConfirmationDialog() {
-        AlertDialog.Builder(requireContext()) // Menggunakan requireContext() untuk mendapatkan Context
+        AlertDialog.Builder(requireContext())
             .setTitle("Exit Confirmation")
             .setMessage("Are you sure want to exit the application?")
             .setPositiveButton("Yes") { dialog, which ->
-                // Tutup semua Activity dan keluar dari aplikasi
                 activity?.finishAffinity()
             }
             .setNegativeButton("No") { dialog, which ->
-                dialog.dismiss() // Tutup dialog
+                dialog.dismiss()
             }
             .show()
     }

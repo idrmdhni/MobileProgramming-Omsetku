@@ -7,92 +7,96 @@
     tools:context=".fragment.HomeFragment"
     android:background="@color/background_light_secondary">
 
-    <ScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <!-- Header -->
-            <LinearLayout
-                android:id="@+id/header"
+            android:layout_height="match_parent">
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="225dp"
-                app:layout_constraintTop_toTopOf="parent"
-                android:orientation="vertical"
-                android:background="@drawable/color1_rounded1_bottom">
+                android:layout_height="wrap_content">
+
+                <!-- Header -->
                 <LinearLayout
+                    android:id="@+id/header"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="225dp"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:orientation="vertical"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginHorizontal="16dp">
+                    android:background="@drawable/color1_rounded1_bottom">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical">
+                        android:orientation="vertical"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginHorizontal="16dp">
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1">
-                            <TextView
-                                android:layout_width="wrap_content"
+                            android:gravity="center_vertical">
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="Hi, "
-                                android:textColor="@color/white"
-                                android:textSize="28dp"
-                                android:textStyle="bold"/>
+                                android:layout_weight="1">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Hi, "
+                                    android:textColor="@color/white"
+                                    android:textSize="28dp"
+                                    android:textStyle="bold"/>
 
-                            <TextView
-                                android:id="@+id/account_name"
+                                <TextView
+                                    android:id="@+id/account_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/white"
+                                    android:textSize="28dp"
+                                    android:textStyle="bold"
+                                    android:background="@color/color2"/>
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/account"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-                                android:textSize="28dp"
-                                android:textStyle="bold"
-                                android:background="@color/color2"/>
+                                android:layout_marginStart="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:src="@drawable/account_circle"
+                                app:tint="@color/pressed_white_to_textsecondarydark"
+                                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
                         </LinearLayout>
 
-                        <ImageView
-                            android:id="@+id/account"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:src="@drawable/account_circle"
-                            app:tint="@color/pressed_white_to_textsecondarydark"
-                            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+                            android:layout_marginTop="4dp"
+                            android:text="Let's start selling"
+                            android:textSize="16sp"
+                            android:textColor="@color/white"/>
                     </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Let's start selling"
-                        android:textSize="16sp"
-                        android:textColor="@color/white"/>
                 </LinearLayout>
-            </LinearLayout>
 
-            <ImageView
-                android:layout_width="244dp"
-                android:layout_height="244dp"
-                android:layout_marginTop="46dp"
-                android:layout_marginEnd="-3dp"
-                android:src="@drawable/home_asset1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                <ImageView
+                    android:layout_width="244dp"
+                    android:layout_height="244dp"
+                    android:layout_marginTop="46dp"
+                    android:layout_marginEnd="-3dp"
+                    android:src="@drawable/home_asset1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Summary -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/header"
-                android:orientation="vertical"
-                android:layout_marginTop="16dp"
-                android:layout_marginHorizontal="16dp">
+                <!-- Summary -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/header"
+                    android:orientation="vertical"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginHorizontal="16dp">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -138,6 +142,7 @@
                                     android:padding="14dp"
                                     android:layout_marginTop="-14dp">
                                     <TextView
+                                        android:id="@+id/display_total_items"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:paddingTop="8dp"
@@ -173,6 +178,7 @@
                                     android:padding="14dp"
                                     android:layout_marginTop="-14dp">
                                     <TextView
+                                        android:id="@+id/display_today_sale"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:paddingTop="8dp"
@@ -214,6 +220,7 @@
                                     android:padding="14dp"
                                     android:layout_marginTop="-14dp">
                                     <TextView
+                                        android:id="@+id/display_this_week_sale"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:paddingTop="8dp"
@@ -249,6 +256,7 @@
                                     android:padding="14dp"
                                     android:layout_marginTop="-14dp">
                                     <TextView
+                                        android:id="@+id/display_this_month_sale"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:paddingTop="8dp"
@@ -260,9 +268,10 @@
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-            </LinearLayout>
+                </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

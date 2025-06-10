@@ -14,10 +14,10 @@ import androidx.core.graphics.toColorInt
 import com.k5.omsetku.utils.LoadFragment
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var homeFragment: HomeFragment
-    private lateinit var categoryFragment: CategoryFragment
-    private lateinit var productFragment: ProductFragment
-    private lateinit var saleFragment: SaleFragment
+    lateinit var homeFragment: HomeFragment
+    lateinit var categoryFragment: CategoryFragment
+    lateinit var productFragment: ProductFragment
+    lateinit var saleFragment: SaleFragment
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {

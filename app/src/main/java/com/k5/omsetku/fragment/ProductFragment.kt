@@ -108,7 +108,9 @@ class ProductFragment : Fragment(), ProductAdapter.OnItemActionListener {
     override fun onResume() {
         super.onResume()
 
-        productAdapter.filter.filter(binding.inputSearch.text.toString())
+        if (binding.inputSearch.text.isNotEmpty()) {
+            binding.inputSearch.setText("")
+        }
     }
 
     override fun onItemEditClicked(product: Product) {

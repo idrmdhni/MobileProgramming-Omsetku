@@ -114,7 +114,9 @@ class CategoryFragment : Fragment(), CategoryAdapter.OnItemActionListener {
     override fun onResume() {
         super.onResume()
 
-        categoryAdapter.filter.filter(binding.inputSearch.text.toString())
+        if (binding.inputSearch.text.isNotEmpty()) {
+            binding.inputSearch.setText("")
+        }
     }
 
     override fun onItemEditClicked(category: Category) {

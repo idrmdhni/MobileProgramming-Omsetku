@@ -25,6 +25,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import com.google.firebase.Timestamp
+import com.k5.omsetku.MainActivity
+import com.k5.omsetku.R
 
 class AddSaleFragment : Fragment() {
     private lateinit var addSaleProductListAdapter: AddSaleProductListAdapter
@@ -148,7 +151,8 @@ class AddSaleFragment : Fragment() {
             val sale = Sale(
                 buyersName = inputBuyersName,
                 invoiceNumber = invoice,
-                totalPurchase = totalPurchase
+                totalPurchase = totalPurchase,
+                purchaseDate = Timestamp.now()
             )
 
             if (productList.isEmpty()) {
@@ -170,6 +174,7 @@ class AddSaleFragment : Fragment() {
         dialogFragment.show(parentFragmentManager, "popup_choose_product")
     }
 
+    @SuppressLint("ImplicitSamInstance", "CommitTransaction")
     private fun addSale(sale: Sale, saleDetail: List<SaleDetail>) {
         lifecycleScope.launch {
             val result = saleViewModel.addSaleBatch(sale, saleDetail)

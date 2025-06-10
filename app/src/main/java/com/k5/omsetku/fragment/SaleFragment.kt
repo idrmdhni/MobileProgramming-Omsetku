@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.setFragmentResultListener
@@ -28,6 +29,12 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
     private lateinit var saleAdapter: SaleAdapter
     private var _binding: FragmentSaleBinding? = null
     private val binding get() = _binding!!
+    private var selectedYear: Int? = null
+    private var selectedMonth: Int? = null
+    private val monthNames = arrayOf(
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +59,49 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
         binding.rvSales.adapter = saleAdapter
 
         binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.dropdownFilterMonth.setText("", false)
+            binding.dropdownFilterYear.setText("", false)
+            binding.dropdownFilterMonth.clearFocus()
+            binding.dropdownFilterYear.clearFocus()
+            selectedYear = null
+            selectedMonth = null
             saleViewModel.refreshSales()
+            saleViewModel.loadAvailableFilterOptions()
+        }
+
+        saleViewModel.availableYears.observe(viewLifecycleOwner) { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    // Bisa tampilkan loading di sini jika perlu
+                }
+                is LoadState.Success -> {
+                    val years = loadState.data.map { it.toString() } // Konversi Int ke String
+                    val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, years)
+                    binding.dropdownFilterYear.setAdapter(yearAdapter)
+                }
+                is LoadState.Error -> {
+                    Toast.makeText(requireContext(), "Failed to load year list: ${loadState.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        saleViewModel.availableMonths.observe(viewLifecycleOwner) { loadState ->
+            when (loadState) {
+                is LoadState.Loading -> {
+                    // Bisa tampilkan loading di sini jika perlu
+                }
+                is LoadState.Success -> {
+                    // Konversi angka bulan (1-12) ke nama bulan
+                    val months = loadState.data.mapNotNull { monthIndex ->
+                        if (monthIndex in 1..12) monthNames[monthIndex - 1] else null
+                    }
+                    val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, monthNames)
+                    binding.dropdownFilterMonth.setAdapter(monthAdapter)
+                }
+                is LoadState.Error -> {
+                    Toast.makeText(requireContext(), "Failed to load month list: ${loadState.message}", Toast.LENGTH_LONG).show()
+                }
+            }
         }
 
         saleViewModel.sales.observe(viewLifecycleOwner, Observer { loadState ->
@@ -99,6 +148,18 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
             }
         })
 
+        binding.dropdownFilterYear.setOnItemClickListener { parent, view, position, id ->
+            val selectedYearString = parent.getItemAtPosition(position).toString()
+            selectedYear = selectedYearString.toIntOrNull()
+            saleViewModel.loadSalesByMonthAndYear(selectedMonth, selectedYear)
+        }
+
+        binding.dropdownFilterMonth.setOnItemClickListener { parent, view, position, id ->
+            val selectedMonthName = parent.getItemAtPosition(position).toString()
+            selectedMonth = monthNames.indexOf(selectedMonthName) + 1
+            saleViewModel.loadSalesByMonthAndYear(selectedMonth, selectedYear)
+        }
+
         setFragmentResultListener("sale_update_request") { requestKey, bundle ->
             if (requestKey == "sale_update_request") {
                 binding.inputSearch.setText("")
@@ -110,6 +171,10 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
         binding.btnAddSales.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, AddSaleFragment())
         }
+
+        binding.dropdownFilterMonth.setOnClickListener {
+
+        }
     }
 
     override fun onDestroyView() {
@@ -120,7 +185,18 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
     override fun onResume() {
         super.onResume()
 
-        saleAdapter.filter.filter(binding.inputSearch.text)
+        if (binding.dropdownFilterMonth.isFocused || binding.dropdownFilterYear.isFocused) {
+            binding.dropdownFilterMonth.setText("", false)
+            binding.dropdownFilterYear.setText("", false)
+            binding.dropdownFilterMonth.clearFocus()
+            binding.dropdownFilterYear.clearFocus()
+            selectedYear = null
+            selectedMonth = null
+        }
+
+        if (binding.inputSearch.text.isNotEmpty()) {
+            binding.inputSearch.setText("")
+        }
     }
 
     override fun onSalesDetailsClicked(sale: Sale) {

@@ -1,6 +1,6 @@
 package com.k5.omsetku.repository
 
-import com.google.android.gms.common.api.Batch
+import android.icu.util.Calendar
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
 import com.k5.omsetku.model.Product
@@ -8,6 +8,7 @@ import com.k5.omsetku.model.Sale
 import com.k5.omsetku.model.SaleDetail
 import com.k5.omsetku.utils.FirebaseUtils
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.Timestamp
 
 class SaleRepository {
     private val productRepo: ProductRepository by lazy { ProductRepository() }
@@ -25,10 +26,21 @@ class SaleRepository {
             return Result.failure(IllegalStateException("User is not logged in!"))
         }
 
+        var saleToSave = sale
+
+        sale.purchaseDate?.toDate()?.let {
+            val calendar = Calendar.getInstance().apply { time = it }
+            val calculatedMonth = calendar.get(Calendar.MONTH) + 1
+            val calculatedYear = calendar.get(Calendar.YEAR)
+
+            // Buat salinan (copy) dari objek Sale dengan nilai month dan year yang diperbarui
+            saleToSave = sale.copy(month = calculatedMonth, year = calculatedYear)
+        }
+
         return try {
-            val documentReference = getSalesCollection(uid).add(sale).await()
-            sale.saleId = documentReference.id
-            Result.success(sale)
+            val documentReference = getSalesCollection(uid).add(saleToSave).await()
+            saleToSave.saleId = documentReference.id
+            Result.success(saleToSave)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -39,6 +51,17 @@ class SaleRepository {
         val uid = FirebaseUtils.getCurrentUserId()
         if (uid == null) {
             return Result.failure(IllegalStateException("User is not logged in!"))
+        }
+
+        var saleToSave = sale
+
+        sale.purchaseDate?.toDate()?.let {
+            val calendar = Calendar.getInstance().apply { time = it }
+            val calculatedMonth = calendar.get(Calendar.MONTH) + 1
+            val calculatedYear = calendar.get(Calendar.YEAR)
+
+            // Buat salinan (copy) dari objek Sale dengan nilai month dan year yang diperbarui
+            saleToSave = sale.copy(month = calculatedMonth, year = calculatedYear)
         }
 
         // Ambil semua produk yang terlibat dalam transaksi ini
@@ -72,7 +95,7 @@ class SaleRepository {
 
         val batch = FirebaseUtils.db.batch()
         val saleDocRef = getSalesCollection(uid).document()
-        batch.set(saleDocRef, sale)
+        batch.set(saleDocRef, saleToSave)
 
         for (saleDetail in saleDetailList) {
             val saleDetailDocRef = saleDocRef.collection("sales_details").document()
@@ -92,7 +115,7 @@ class SaleRepository {
 
         return try {
             batch.commit().await()
-            Result.success(sale)
+            Result.success(saleToSave)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -137,6 +160,207 @@ class SaleRepository {
             } else {
                 Result.failure(NoSuchElementException("Sale not found"))
             }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getSalesByMonthAndYear(month: Int? = null, year: Int? = null): Result<List<Sale>> {
+        val uid = FirebaseUtils.getCurrentUserId()
+        if (uid == null) {
+            return Result.failure(IllegalStateException("User is not logged in!"))
+        }
+
+        // Jika tidak ada filter yang diberikan sama sekali, kembalikan error.
+        if (month == null && year == null) {
+            return Result.failure(IllegalArgumentException("Setidaknya bulan atau tahun harus disediakan untuk filter."))
+        }
+
+        return try {
+            var query: Query = getSalesCollection(uid)
+
+            // Terapkan filter berdasarkan tahun jika ada
+            if (year != null) {
+                query = query.whereEqualTo("year", year)
+            }
+
+            // Terapkan filter berdasarkan bulan jika ada
+            if (month != null) {
+                query = query.whereEqualTo("month", month)
+            }
+
+            // Tambahkan pengurutan
+            query = query.orderBy("purchaseDate", Query.Direction.DESCENDING)
+
+            val querySnapshot = query.get().await()
+            val sales = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Sale::class.java)?.apply { this.saleId = document.id }
+            }
+            Result.success(sales)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    // Mengambil penjualan untuk hari ini
+    suspend fun getSalesToday(): Result<List<Sale>> {
+        val uid = FirebaseUtils.getCurrentUserId()
+        if (uid == null) {
+            return Result.failure(IllegalStateException("User is not logged in!"))
+        }
+
+        return try {
+            val calendarStart = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val calendarEnd = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 23)
+                set(Calendar.MINUTE, 59)
+                set(Calendar.SECOND, 59)
+                set(Calendar.MILLISECOND, 999)
+            }
+
+            val startTimestamp = Timestamp(calendarStart.time)
+            val endTimestamp = Timestamp(calendarEnd.time)
+
+            val querySnapshot = getSalesCollection(uid)
+                .whereGreaterThanOrEqualTo("purchaseDate", startTimestamp)
+                .whereLessThanOrEqualTo("purchaseDate", endTimestamp)
+                .orderBy("purchaseDate", Query.Direction.DESCENDING)
+                .get().await()
+
+            val sales = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Sale::class.java)?.apply { this.saleId = document.id }
+            }
+            Result.success(sales)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    // Mengambil penjualan untuk minggu ini (dari hari Minggu sampai Sabtu)
+    suspend fun getSalesThisWeek(): Result<List<Sale>> {
+        val uid = FirebaseUtils.getCurrentUserId()
+        if (uid == null) {
+            return Result.failure(IllegalStateException("User is not logged in!"))
+        }
+
+        return try {
+            val calendarStart = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_WEEK, firstDayOfWeek) // Atur ke hari pertama minggu (biasanya Minggu)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val calendarEnd = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_WEEK, firstDayOfWeek) // Atur ke hari pertama minggu
+                add(Calendar.WEEK_OF_YEAR, 1) // Tambahkan satu minggu
+                add(Calendar.MILLISECOND, -1) // Kurangi 1ms untuk akhir minggu sebelumnya
+            }
+
+            val startTimestamp = Timestamp(calendarStart.time)
+            val endTimestamp = Timestamp(calendarEnd.time)
+
+            val querySnapshot = getSalesCollection(uid)
+                .whereGreaterThanOrEqualTo("purchaseDate", startTimestamp)
+                .whereLessThanOrEqualTo("purchaseDate", endTimestamp)
+                .orderBy("purchaseDate", Query.Direction.DESCENDING)
+                .get().await()
+
+            val sales = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Sale::class.java)?.apply { this.saleId = document.id }
+            }
+            Result.success(sales)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    // Mengambil penjualan untuk bulan ini
+    suspend fun getSalesThisMonth(): Result<List<Sale>> {
+        val uid = FirebaseUtils.getCurrentUserId()
+        if (uid == null) {
+            return Result.failure(IllegalStateException("User is not logged in!"))
+        }
+
+        return try {
+            val calendarStart = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_MONTH, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val calendarEnd = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+                set(Calendar.HOUR_OF_DAY, 23)
+                set(Calendar.MINUTE, 59)
+                set(Calendar.SECOND, 59)
+                set(Calendar.MILLISECOND, 999)
+            }
+
+            val startTimestamp = Timestamp(calendarStart.time)
+            val endTimestamp = Timestamp(calendarEnd.time)
+
+            val querySnapshot = getSalesCollection(uid)
+                .whereGreaterThanOrEqualTo("purchaseDate", startTimestamp)
+                .whereLessThanOrEqualTo("purchaseDate", endTimestamp)
+                .orderBy("purchaseDate", Query.Direction.DESCENDING)
+                .get().await()
+
+            val sales = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Sale::class.java)?.apply { this.saleId = document.id }
+            }
+            Result.success(sales)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    // Mengambil penjualan untuk tahun ini
+    suspend fun getSalesThisYear(): Result<List<Sale>> {
+        val uid = FirebaseUtils.getCurrentUserId()
+        if (uid == null) {
+            return Result.failure(IllegalStateException("User is not logged in!"))
+        }
+
+        return try {
+            val calendarStart = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_YEAR, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val calendarEnd = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_YEAR, getActualMaximum(Calendar.DAY_OF_YEAR))
+                set(Calendar.HOUR_OF_DAY, 23)
+                set(Calendar.MINUTE, 59)
+                set(Calendar.SECOND, 59)
+                set(Calendar.MILLISECOND, 999)
+            }
+
+            val startTimestamp = Timestamp(calendarStart.time)
+            val endTimestamp = Timestamp(calendarEnd.time)
+
+            val querySnapshot = getSalesCollection(uid)
+                .whereGreaterThanOrEqualTo("purchaseDate", startTimestamp)
+                .whereLessThanOrEqualTo("purchaseDate", endTimestamp)
+                .orderBy("purchaseDate", Query.Direction.DESCENDING)
+                .get().await()
+
+            val sales = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Sale::class.java)?.apply { this.saleId = document.id }
+            }
+            Result.success(sales)
         } catch (e: Exception) {
             Result.failure(e)
         }
