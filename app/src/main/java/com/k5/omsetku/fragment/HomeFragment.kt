@@ -1,25 +1,20 @@
 package com.k5.omsetku.fragment
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import com.k5.omsetku.LogInActivity
 import com.k5.omsetku.R
+import com.k5.omsetku.adapter.LowProductListAdapter
 import com.k5.omsetku.databinding.FragmentHomeBinding
+import com.k5.omsetku.model.Product
 import com.k5.omsetku.model.Sale
 import com.k5.omsetku.utils.LoadFragment
 import com.k5.omsetku.utils.LoadState
@@ -41,7 +36,8 @@ class HomeFragment : Fragment() {
     private var thisMonthSale: Long = 0
 
     private lateinit var homeViewModel: HomeViewModel
-    val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+    private lateinit var lowProductListAdapter: LowProductListAdapter
+    val rupiahFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +56,9 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        lowProductListAdapter = LowProductListAdapter()
+        binding.rvLowStockProducts.adapter = lowProductListAdapter
+
         // Tangani tombol kembali fisik
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -68,16 +67,10 @@ class HomeFragment : Fragment() {
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
 
-        // Set listener untuk interaksi UI
-        binding.account.setOnClickListener {
-            LoadFragment.loadChildFragment(
-                parentFragmentManager,
-                R.id.host_fragment,
-                AccountFragment()
-            )
+        binding.logout.setOnClickListener {
+            homeViewModel.signOut()
         }
 
-        // Amati LiveData dari ViewModel
         observeViewModel()
     }
 
@@ -90,7 +83,6 @@ class HomeFragment : Fragment() {
         // Amati permintaan navigasi ke LoginActivity
         homeViewModel.navigateToLogin.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
-                Toast.makeText(requireContext(), "Anda harus login.", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(requireContext(), LogInActivity::class.java))
                 requireActivity().finish()
                 homeViewModel.onLoginNavigationHandled() // Beri tahu ViewModel bahwa navigasi sudah ditangani
@@ -103,6 +95,7 @@ class HomeFragment : Fragment() {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
         }
+
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             homeViewModel.loadSalesToday()
@@ -119,6 +112,20 @@ class HomeFragment : Fragment() {
                 }
                 is LoadState.Success -> {
                     binding.swipeRefreshLayout.isRefreshing = false
+
+                    val lowProductList: ArrayList<Product> = ArrayList()
+                    for (product in loadState.data) {
+                        if (product.productStock <= 5) {
+                            lowProductList.add(product)
+                        }
+                    }
+
+                    if (lowProductList.isEmpty)  {
+                        binding.rvLowStockProducts.visibility = View.GONE
+                    } else {
+                        binding.rvLowStockProducts.visibility = View.VISIBLE
+                        lowProductListAdapter.productList = lowProductList
+                    }
 
                     binding.displayTotalItems.text = loadState.data.size.toString()
                 }

@@ -59,13 +59,13 @@
                             </LinearLayout>
 
                             <ImageView
-                                android:id="@+id/account"
+                                android:id="@+id/logout"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
                                 android:clickable="true"
                                 android:focusable="true"
-                                android:src="@drawable/account_circle"
+                                android:src="@drawable/logout"
                                 app:tint="@color/pressed_white_to_textsecondarydark"
                                 tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
                         </LinearLayout>
@@ -89,7 +89,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
-                <!-- Summary -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -97,179 +96,224 @@
                     android:orientation="vertical"
                     android:layout_marginTop="16dp"
                     android:layout_marginHorizontal="16dp">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Sumarry"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/color1"/>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="12dp"/>
-
+                    <!-- Summary -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_marginBottom="6dp">
+                        <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                            <!-- Total Items -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:layout_marginEnd="12dp"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:id="@+id/title_total_items"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Total Items"
-                                    android:textAlignment="center"
-                                    android:background="@drawable/color1_rounded1"
-                                    android:textColor="@color/white"
-                                    android:padding="6dp"
-                                    android:translationZ="1dp"/>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:background="@drawable/backgroundlighttertiary_rounded1"
-                                    android:padding="14dp"
-                                    android:layout_marginTop="-14dp">
-                                    <TextView
-                                        android:id="@+id/display_total_items"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:paddingTop="8dp"
-                                        android:text="248"
-                                        android:textSize="18sp"
-                                        android:textStyle="bold"
-                                        android:textAlignment="center"/>
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <!-- Today's Sale -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:id="@+id/title_today_sale"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Today's Sale"
-                                    android:textAlignment="center"
-                                    android:background="@drawable/color2_rounded1"
-                                    android:textColor="@color/white"
-                                    android:padding="6dp"
-                                    android:translationZ="1dp"/>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:background="@drawable/backgroundlighttertiary_rounded1"
-                                    android:padding="14dp"
-                                    android:layout_marginTop="-14dp">
-                                    <TextView
-                                        android:id="@+id/display_today_sale"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:paddingTop="8dp"
-                                        android:text="Rp32.000.000.000"
-                                        android:textSize="18sp"
-                                        android:textStyle="bold"
-                                        android:textAlignment="center"/>
-                                </LinearLayout>
-                            </LinearLayout>
-                        </LinearLayout>
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="6dp"
+                            android:text="Sumarry"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/color1"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp">
-                            <!-- This Week's Sale -->
+                            android:orientation="vertical"
+                            android:layout_marginBottom="6dp">
                             <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:layout_marginEnd="12dp"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:id="@+id/title_this_week_sale"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="This Week's Sale"
-                                    android:textAlignment="center"
-                                    android:background="@drawable/color3_rounded1"
-                                    android:textColor="@color/white"
-                                    android:padding="6dp"
-                                    android:translationZ="1dp"/>
-
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="6dp">
+                                <!-- Total Items -->
                                 <LinearLayout
-                                    android:layout_width="match_parent"
+                                    android:layout_width="0dp"
                                     android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:background="@drawable/backgroundlighttertiary_rounded1"
-                                    android:padding="14dp"
-                                    android:layout_marginTop="-14dp">
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="6dp"
+                                    android:orientation="vertical">
                                     <TextView
-                                        android:id="@+id/display_this_week_sale"
-                                        android:layout_width="wrap_content"
+                                        android:id="@+id/title_total_items"
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:paddingTop="8dp"
-                                        android:text="Rp.120.000.000"
-                                        android:textSize="18sp"
-                                        android:textStyle="bold"
-                                        android:textAlignment="center"/>
+                                        android:text="Total Items"
+                                        android:textAlignment="center"
+                                        android:background="@drawable/color1_rounded1"
+                                        android:textColor="@color/white"
+                                        android:padding="6dp"
+                                        android:translationZ="1dp"/>
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:background="@drawable/backgroundlighttertiary_rounded1"
+                                        android:padding="14dp"
+                                        android:layout_marginTop="-14dp">
+                                        <TextView
+                                            android:id="@+id/display_total_items"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:paddingTop="8dp"
+                                            android:text="248"
+                                            android:textSize="18sp"
+                                            android:textStyle="bold"
+                                            android:textAlignment="center"/>
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <!-- Today's Sale -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:id="@+id/title_today_sale"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Today's Sale"
+                                        android:textAlignment="center"
+                                        android:background="@drawable/color2_rounded1"
+                                        android:textColor="@color/white"
+                                        android:padding="6dp"
+                                        android:translationZ="1dp"/>
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:background="@drawable/backgroundlighttertiary_rounded1"
+                                        android:padding="14dp"
+                                        android:layout_marginTop="-14dp">
+                                        <TextView
+                                            android:id="@+id/display_today_sale"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:paddingTop="8dp"
+                                            android:text="Rp32.000.000.000"
+                                            android:textSize="18sp"
+                                            android:textStyle="bold"
+                                            android:textAlignment="center"/>
+                                    </LinearLayout>
                                 </LinearLayout>
                             </LinearLayout>
 
-                            <!-- This Month's Sale -->
                             <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:id="@+id/title_this_month_sale"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="This Month's Sale"
-                                    android:textAlignment="center"
-                                    android:background="@drawable/color4_rounded1"
-                                    android:textColor="@color/white"
-                                    android:padding="6dp"
-                                    android:translationZ="1dp"/>
-
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <!-- This Week's Sale -->
                                 <LinearLayout
-                                    android:layout_width="match_parent"
+                                    android:layout_width="0dp"
                                     android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:background="@drawable/backgroundlighttertiary_rounded1"
-                                    android:padding="14dp"
-                                    android:layout_marginTop="-14dp">
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="6dp"
+                                    android:orientation="vertical">
                                     <TextView
-                                        android:id="@+id/display_this_month_sale"
-                                        android:layout_width="wrap_content"
+                                        android:id="@+id/title_this_week_sale"
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:paddingTop="8dp"
-                                        android:text="Rp390.000.000"
-                                        android:textSize="18sp"
-                                        android:textStyle="bold"
-                                        android:textAlignment="center"/>
+                                        android:text="This Week's Sale"
+                                        android:textAlignment="center"
+                                        android:background="@drawable/color3_rounded1"
+                                        android:textColor="@color/white"
+                                        android:padding="6dp"
+                                        android:translationZ="1dp"/>
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:background="@drawable/backgroundlighttertiary_rounded1"
+                                        android:padding="14dp"
+                                        android:layout_marginTop="-14dp">
+                                        <TextView
+                                            android:id="@+id/display_this_week_sale"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:paddingTop="8dp"
+                                            android:text="Rp.120.000.000"
+                                            android:textSize="18sp"
+                                            android:textStyle="bold"
+                                            android:textAlignment="center"/>
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <!-- This Month's Sale -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:id="@+id/title_this_month_sale"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="This Month's Sale"
+                                        android:textAlignment="center"
+                                        android:background="@drawable/color4_rounded1"
+                                        android:textColor="@color/white"
+                                        android:padding="6dp"
+                                        android:translationZ="1dp"/>
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:background="@drawable/backgroundlighttertiary_rounded1"
+                                        android:padding="14dp"
+                                        android:layout_marginTop="-14dp">
+                                        <TextView
+                                            android:id="@+id/display_this_month_sale"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:paddingTop="8dp"
+                                            android:text="Rp390.000.000"
+                                            android:textSize="18sp"
+                                            android:textStyle="bold"
+                                            android:textAlignment="center"/>
+                                    </LinearLayout>
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
 
+                    <!-- Low Stock Products -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:background="@drawable/color1_rounded1"
+                                android:padding="6dp"
+                                android:translationZ="1dp">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Low Stock Products"
+                                    android:textColor="@color/white"
+                                    android:layout_gravity="center_horizontal"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/backgroundlighttertiary_rounded1"
+                                android:layout_marginTop="-14dp"
+                                android:paddingTop="20dp"
+                                android:paddingBottom="2dp"
+                                android:paddingHorizontal="8dp">
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/rv_low_stock_products"
+                                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                </androidx.recyclerview.widget.RecyclerView>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -25,7 +25,7 @@ class HomeViewModel: ViewModel() {
     private val _navigateToLogin = MutableLiveData<Boolean>()
     val navigateToLogin: LiveData<Boolean> = _navigateToLogin
 
-    // LiveData untuk pesan kesalahan yang bisa ditampilkan di Toast
+    // LiveData untuk pesan kesalahan yang terjadi pada akun
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
@@ -46,12 +46,12 @@ class HomeViewModel: ViewModel() {
     private val _salesThisYear = MutableLiveData<LoadState<List<Sale>>>()
     val salesThisYear: LiveData<LoadState<List<Sale>>> = _salesThisYear
 
-
-
     private var userProfileListener: ListenerRegistration? = null
+    private var auth = FirebaseUtils.auth
 
     init {
         setupFirestoreListeners()
+        loadProducts()
         loadSalesToday()
         loadSalesThisWeek()
         loadSalesThisMonth()
@@ -95,6 +95,12 @@ class HomeViewModel: ViewModel() {
     private fun removeFirestoreListeners() {
         userProfileListener?.remove()
         userProfileListener = null
+    }
+
+    fun signOut() {
+        auth.signOut()
+
+        _navigateToLogin.value = true
     }
 
     // Fungsi untuk menandai bahwa navigasi ke LoginActivity telah ditangani
