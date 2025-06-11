@@ -4,10 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.k5.omsetku.model.Product
 import com.k5.omsetku.model.Sale
 import com.k5.omsetku.model.SaleDetail
-import com.k5.omsetku.repository.ProductRepository
 import com.k5.omsetku.repository.SaleRepository
 import com.k5.omsetku.utils.LoadState
 import kotlinx.coroutines.launch

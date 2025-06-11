@@ -15,6 +15,7 @@ constraintlayout = "2.2.1"
 annotation = "1.9.1"
 lifecycleLivedataKtx = "2.9.1"
 lifecycleViewmodelKtx = "2.9.1"
+mpandroidchart = "v3.1.0"
 pagingCommonAndroid = "3.3.6"
 pagingCommonJvm = "3.3.6"
 swiperefreshlayout = "1.1.0"
@@ -40,6 +41,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

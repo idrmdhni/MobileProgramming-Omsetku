@@ -1,6 +1,5 @@
 package com.k5.omsetku.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -95,6 +93,8 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
                     val months = loadState.data.mapNotNull { monthIndex ->
                         if (monthIndex in 1..12) monthNames[monthIndex - 1] else null
                     }
+
+                    // Jika ingin menampilkan hanya bulan yang telah melakukan penjualan gunakan variabel months
                     val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, monthNames)
                     binding.dropdownFilterMonth.setAdapter(monthAdapter)
                 }

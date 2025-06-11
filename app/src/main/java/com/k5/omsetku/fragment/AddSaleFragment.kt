@@ -18,7 +18,6 @@ import com.k5.omsetku.databinding.FragmentAddSaleBinding
 import com.k5.omsetku.model.Category
 import com.k5.omsetku.model.Sale
 import com.k5.omsetku.model.SaleDetail
-import com.k5.omsetku.viewmodel.ProductViewModel
 import com.k5.omsetku.viewmodel.SaleViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -26,8 +25,6 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 import com.google.firebase.Timestamp
-import com.k5.omsetku.MainActivity
-import com.k5.omsetku.R
 
 class AddSaleFragment : Fragment() {
     private lateinit var addSaleProductListAdapter: AddSaleProductListAdapter
