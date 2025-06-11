@@ -15,23 +15,13 @@
         android:background="@drawable/color1_rounded1_top">
 
     <TextView
-        android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Pilih Item"
+        android:text="Choose Product"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/white"/>
-
-<!--    <ImageButton-->
-<!--        android:id="@+id/closeButton"-->
-<!--        android:layout_width="24dp"-->
-<!--        android:layout_height="24dp"-->
-<!--        android:src="@android:drawable/ic_menu_close_clear_cancel"-->
-<!--        android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:contentDescription="Tutup" />-->
     </RelativeLayout>
 
     <LinearLayout
@@ -45,7 +35,7 @@
             android:paddingVertical="8dp"
             android:paddingStart="10dp"
             android:paddingEnd="22dp"
-            android:layout_marginBottom="6dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/white_rounded1">
             <ImageView
                 android:layout_width="32dp"
@@ -87,8 +77,6 @@
             </LinearLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,5 +113,4 @@
                 android:text="Add" />
         </LinearLayout>
     </LinearLayout>
-
 </LinearLayout>

@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="32sp"
                 android:text="LOGIN"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="17dp"
                 android:textColor="#329D9C"
                 android:textStyle="bold" />
             <EditText
@@ -66,12 +66,13 @@
                 android:layout_marginBottom="12dp" />
 
             <TextView
+                android:id="@+id/forgot_password"
                 tools:ignore="TouchTargetSizeCheck"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:clickable="true"
-                android:text="Forget Password?"
+                android:text="Forgot Password?"
                 android:textAlignment="textEnd"
                 android:textColor="@color/pressed_color2_to_secondaryvariant_effect" />
 

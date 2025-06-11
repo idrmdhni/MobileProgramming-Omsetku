@@ -3,6 +3,7 @@ package com.k5.omsetku
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -48,27 +49,27 @@ class SignUpActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.btnSignup.setOnClickListener {
-            val inputEmail = binding.inputEmail.text.toString().trim()
-            val inputName =  binding.inputName.text.toString().trim()
-            val inputPassword = binding.inputPw.text.toString().trim()
-            val inputConfirmPassword = binding.inputConfirmPw.text.toString().trim()
+            val name =  binding.inputName.text.toString().trim()
+            val email = binding.inputEmail.text.toString().trim()
+            val password = binding.inputPw.text.toString().trim()
+            val confirmPassword = binding.inputConfirmPw.text.toString().trim()
 
-            if (inputName.isEmpty() || inputEmail.isEmpty() || inputPassword.isEmpty() || inputConfirmPassword.isEmpty()) {
-                Toast.makeText(this, "Input tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                Toast.makeText(this, "Input cannot be empty!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (inputPassword != inputConfirmPassword) {
-                Toast.makeText(this, "Password tidak sama!", Toast.LENGTH_SHORT).show()
+            if (password != confirmPassword) {
+                Toast.makeText(this, "Password not match!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (inputPassword.length < 8) {
-                Toast.makeText(this, "Password minimal 8 karakter!", Toast.LENGTH_SHORT).show()
+            if (password.length < 8) {
+                Toast.makeText(this, "The password must be at least 8 characters!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            auth.createUserWithEmailAndPassword(inputEmail, inputPassword).
+            auth.createUserWithEmailAndPassword(email, password).
                 addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         val user: FirebaseUser? = auth.currentUser
@@ -76,8 +77,8 @@ class SignUpActivity : AppCompatActivity() {
                         user?.let { firebaseUser ->
                             val userUid = firebaseUser.uid
                             val userData = hashMapOf(
-                                "name" to inputName,
-                                "email" to inputEmail
+                                "name" to name,
+                                "email" to email
                             )
 
                             db.collection("users").document(userUid)

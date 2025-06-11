@@ -79,9 +79,9 @@ class AddSaleFragment : Fragment() {
             showChooseProductFragment()
         }
 
-        setFragmentResultListener(ChooseProductFragment.REQUEST_KEY_SELECTED_PRODUCTS) { requestKey, bundle ->
+        setFragmentResultListener(ChooseProductFragment.REQUEST_KEY_SELECTED_PRODUCTS_AND_CATEGORIES) { requestKey, bundle ->
             // Pastikan requestKey cocok
-            if (requestKey == ChooseProductFragment.REQUEST_KEY_SELECTED_PRODUCTS) {
+            if (requestKey == ChooseProductFragment.REQUEST_KEY_SELECTED_PRODUCTS_AND_CATEGORIES) {
                 // Dapatkan daftar item yang dipilih dari Bundle
                 @Suppress("DEPRECATION")
                 val selectedProducts: ArrayList<Product>? = bundle.getParcelableArrayList(
@@ -160,7 +160,6 @@ class AddSaleFragment : Fragment() {
             } else {
                 addSale(sale, saleDetailList)
             }
-
         }
     }
 

@@ -53,6 +53,7 @@
                 android:layout_marginBottom="16dp"
                 android:textColor="#329D9C"
                 android:textStyle="bold" />
+
             <EditText
                 android:id="@+id/input_email"
                 android:hint="Email"

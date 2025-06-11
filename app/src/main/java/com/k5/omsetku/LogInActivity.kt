@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.graphics.toColorInt
 import com.google.firebase.auth.FirebaseAuth
 import com.k5.omsetku.databinding.ActivityLogInBinding
+import com.k5.omsetku.fragment.ForgotPasswordFragment
 import com.k5.omsetku.utils.FirebaseUtils
 
 class LogInActivity : AppCompatActivity() {
@@ -40,26 +41,30 @@ class LogInActivity : AppCompatActivity() {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
+
         binding.btnLogin.setOnClickListener {
             val email = binding.inputEmail.text.toString().trim()
             val password = binding.inputPw.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Input tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Input cannot be empty!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             auth.signInWithEmailAndPassword(email, password).
                 addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(this, "Login berhasil!", Toast.LENGTH_SHORT).show()
-
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     } else {
-                        Toast.makeText(this, "Login gagal!: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Login failed!: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
+        }
+
+        binding.forgotPassword.setOnClickListener {
+            val dialogFragment = ForgotPasswordFragment()
+            dialogFragment.show(supportFragmentManager, "popup_forgot_password")
         }
     }
 }

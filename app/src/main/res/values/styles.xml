@@ -4,7 +4,16 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">52dp</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:padding">16dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:background">@drawable/white_stroke_rounded1</item>
+        <item name="android:textColor">@color/color2</item>
+        <item name="android:textColorHint">@color/color2</item>
+    </style>
+    <style name="input_form_sm" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingStart">16dp</item>
         <item name="android:background">@drawable/white_stroke_rounded1</item>
         <item name="android:textColor">@color/color2</item>
         <item name="android:textColorHint">@color/color2</item>

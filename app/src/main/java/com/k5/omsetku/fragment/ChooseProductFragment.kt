@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -34,16 +33,16 @@ class ChooseProductFragment: DialogFragment() {
     private val binding get() = _binding!!
 
     companion object {
-        const val REQUEST_KEY_SELECTED_PRODUCTS = "request_key_selected_products"
+        const val REQUEST_KEY_SELECTED_PRODUCTS_AND_CATEGORIES = "request_key_selected_products"
         const val BUNDLE_KEY_SELECTED_PRODUCTS = "bundle_key_selected_products"
         const val BUNDLE_KEY_CATEGORIES = "bundle_key_categories"
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        // Set transparent background to show rounded corners
+        // Mengatur banground fragment menjadi transparan agar lengkungan terlihat
         dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE) // No default title bar
+        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE) // Tidak ada title bar
 
         productViewModel = ViewModelProvider(this)[ProductViewModel::class.java]
         categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
@@ -63,14 +62,20 @@ class ChooseProductFragment: DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        observeViewModel()
         setupListeners()
+    }
 
-
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            productViewModel.refreshProducts()
-            categoryViewModel.refreshCategories()
+    private fun setupRecyclerView() {
+        chooseProductListAdapter = ChooseProductListAdapter { product ->
+            chooseProductListAdapter.toggleSelection(product)
+            updateAddButtonState()
         }
+        binding.rvChooseProductList.layoutManager = LinearLayoutManager(context)
+        binding.rvChooseProductList.adapter = chooseProductListAdapter
+    }
 
+    private fun observeViewModel() {
         productViewModel.products.observe(viewLifecycleOwner, Observer { loadState ->
             when (loadState) {
                 is LoadState.Loading -> {
@@ -108,18 +113,14 @@ class ChooseProductFragment: DialogFragment() {
         })
     }
 
-    private fun setupRecyclerView() {
-        chooseProductListAdapter = ChooseProductListAdapter { product ->
-            chooseProductListAdapter.toggleSelection(product)
-            updateAddButtonState()
-        }
-        binding.rvChooseProductList.layoutManager = LinearLayoutManager(context)
-        binding.rvChooseProductList.adapter = chooseProductListAdapter
-    }
-
     private fun setupListeners() {
         binding.btnCancel.setOnClickListener {
             dismiss()
+        }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            productViewModel.refreshProducts()
+            categoryViewModel.refreshCategories()
         }
 
         binding.inputSearch.addTextChangedListener(object : TextWatcher {
@@ -141,9 +142,9 @@ class ChooseProductFragment: DialogFragment() {
                     putParcelableArrayList(BUNDLE_KEY_CATEGORIES, ArrayList(chooseProductListAdapter.getCategories()))
                 }
                 // Kirim hasil ke Fragment sebelumnya
-                setFragmentResult(REQUEST_KEY_SELECTED_PRODUCTS, resultBundle)
+                setFragmentResult(REQUEST_KEY_SELECTED_PRODUCTS_AND_CATEGORIES, resultBundle)
 
-//                Toast.makeText(context, "Selected ${selectedItems.size} items", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Selected ${selectedItems.size} items", Toast.LENGTH_SHORT).show()
                 dismiss()
             } else {
                 Toast.makeText(context, "Please select at least one item", Toast.LENGTH_SHORT).show()
@@ -170,20 +171,16 @@ class ChooseProductFragment: DialogFragment() {
 
             // Atur lebar dialog menjadi sekitar 90% dari lebar layar
             val dialogWidth = (screenWidth * 0.90).toInt()
-            // Tinggi dialog akan diatur ke WRAP_CONTENT di XML,
+            val dialogHeight = (screenHeight * 0.90).toInt()
 
-            window.setLayout(dialogWidth, WindowManager.LayoutParams.WRAP_CONTENT)
+            window.setLayout(dialogWidth, dialogHeight)
 
-            // Atur posisi dialog
-            // Untuk membuatnya sedikit lebih ke atas:
-            window.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.TOP)
-            // Anda bisa mengatur offset Y untuk menyesuaikan jarak dari atas
-            val params = window.attributes
-            // 10% dari tinggi layar dari atas
-            params.y = (screenHeight * 0.10).toInt()
-            window.attributes = params
+            // Mengatur posisi dialog sedikit lebih ke atas
+            window.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL)
+            // Mengatur offset Y untuk menyesuaikan jarak dari atas
 
-            // Memastikan background di belakang dialog lebih gelap
+            // Mengatur transparansi background di belakang dialog
+             val params = window.attributes
              params.dimAmount = 0.7f // 0.0f (transparan) to 1.0f (gelap total)
              window.setAttributes(params)
         }

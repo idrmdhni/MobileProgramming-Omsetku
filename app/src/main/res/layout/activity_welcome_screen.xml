@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Kendalikan Stok &amp; Raih Penjualan Maksimal"
+                android:text="Control Stock &amp; Achieve Maximum Sales"
                 android:textColor="@color/color2"
                 android:alpha="0.8"
                 android:textAlignment="center"/>
