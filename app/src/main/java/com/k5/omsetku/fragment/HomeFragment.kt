@@ -83,7 +83,7 @@ class HomeFragment : Fragment() {
                 showExitConfirmationDialog()
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         binding.logout.setOnClickListener {
             homeViewModel.signOut()
