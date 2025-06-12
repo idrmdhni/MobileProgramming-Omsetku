@@ -11,6 +11,8 @@ import com.k5.omsetku.repository.ProductRepository
 import com.k5.omsetku.repository.SaleRepository
 import com.k5.omsetku.utils.FirebaseUtils
 import com.k5.omsetku.utils.LoadState
+import kotlinx.coroutines.async // Penting: Tambahkan ini
+import kotlinx.coroutines.awaitAll // Penting: Tambahkan ini
 import kotlinx.coroutines.launch
 
 class HomeViewModel: ViewModel() {
@@ -43,11 +45,16 @@ class HomeViewModel: ViewModel() {
     private val _salesThisMonth = MutableLiveData<LoadState<List<Sale>>>()
     val salesThisMonth: LiveData<LoadState<List<Sale>>> = _salesThisMonth
 
-    private val _salesThisYear = MutableLiveData<LoadState<List<Sale>>>()
-    val salesThisYear: LiveData<LoadState<List<Sale>>> = _salesThisYear
+    // LiveData baru untuk daftar bulan unik (format angka, 1-12)
+    private val _availableMonths = MutableLiveData<LoadState<List<Int>>>()
+    val availableMonths: LiveData<LoadState<List<Int>>> = _availableMonths
+
+    private val _totalSale =  MutableLiveData<LoadState<List<Long>>>()
+    val totalSale: LiveData<LoadState<List<Long>>> = _totalSale
 
     private var userProfileListener: ListenerRegistration? = null
     private var auth = FirebaseUtils.auth
+    // totalSaleList dihapus karena tidak lagi diperlukan sebagai atribut kelas
 
     init {
         setupFirestoreListeners()
@@ -156,14 +163,50 @@ class HomeViewModel: ViewModel() {
         }
     }
 
-    fun loadSalesThisYear() {
-        _salesThisYear.value = LoadState.Loading
+    // Fungsi ini sekarang mengembalikan total penjualan untuk bulan yang diberikan
+    private suspend fun getSalesTotalByMonth(month: Int? = null): Long {
+        return try {
+            val result = saleRepo.getSalesByMonthAndYear(month, null)
+            // Menggunakan sumOf untuk menjumlahkan totalPurchase
+            result.getOrThrow().sumOf { it.totalPurchase }
+        } catch (e: Exception) {
+            // Mengembalikan 0L jika terjadi kesalahan saat memuat data untuk bulan ini
+            0L
+        }
+    }
+
+    fun getSalesTotalperMonth() {
+        _totalSale.value = LoadState.Loading // Set status loading segera
         viewModelScope.launch {
-            val result = saleRepo.getSalesThisYear()
+            val result = saleRepo.getSales() // Ambil semua data penjualan
             result.onSuccess { saleList ->
-                _salesThisYear.value = LoadState.Success(saleList)
+                // Ekstrak dan urutkan bulan-bulan unik dari daftar penjualan
+                val uniqueMonths = saleList
+                    .mapNotNull { it.month } // Ambil bulan yang tidak null
+                    .distinct() // Hanya ambil bulan yang unik
+                    .sorted() // Urutkan secara menaik
+
+                // Ambil 4 bulan terakhir yang memiliki data penjualan
+                val lastFourMonths = uniqueMonths.takeLast(4)
+
+                // Luncurkan perhitungan total penjualan untuk setiap bulan secara paralel
+                // Setiap async akan mengembalikan Deferred<Long>
+                val deferredTotals = lastFourMonths.map { month ->
+                    async { getSalesTotalByMonth(month) }
+                }
+
+                try {
+                    // Tunggu hingga semua Deferred<Long> selesai dan kumpulkan hasilnya
+                    val totalSaleList = deferredTotals.awaitAll()
+                    _totalSale.value = LoadState.Success(totalSaleList) // Perbarui LiveData dengan hasil
+                } catch (e: Exception) {
+                    // Tangani kesalahan jika ada masalah saat menghitung total penjualan bulanan
+                    _totalSale.value = LoadState.Error(e.message ?: "Gagal memuat total penjualan bulanan")
+                }
+
             }.onFailure { e ->
-                _salesThisYear.value = LoadState.Error(e.message ?: "Unknown error")
+                // Tangani kesalahan jika ada masalah saat memuat semua data penjualan awal
+                _totalSale.value = LoadState.Error(e.message ?: "Terjadi kesalahan saat memuat semua penjualan")
             }
         }
     }

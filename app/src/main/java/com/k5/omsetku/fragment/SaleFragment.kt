@@ -69,11 +69,9 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
 
         saleViewModel.availableYears.observe(viewLifecycleOwner) { loadState ->
             when (loadState) {
-                is LoadState.Loading -> {
-                    // Bisa tampilkan loading di sini jika perlu
-                }
+                is LoadState.Loading -> {}
                 is LoadState.Success -> {
-                    val years = loadState.data.map { it.toString() } // Konversi Int ke String
+                    val years = loadState.data.map { it.toString() }
                     val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, years)
                     binding.dropdownFilterYear.setAdapter(yearAdapter)
                 }

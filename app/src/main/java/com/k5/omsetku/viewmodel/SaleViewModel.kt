@@ -28,11 +28,6 @@ class SaleViewModel: ViewModel() {
     // Variabel untuk menandakan apakah data sudah dimuat setidaknya sekali
     private var isDataLoaded = false
 
-    init {
-        loadSales()
-        loadAvailableFilterOptions()
-    }
-
     fun loadSales(forceRefresh: Boolean = false) {
         // Jika data sudah dimuat dan tidak ada paksaan refresh, jangan muat ulang
         if (isDataLoaded && !forceRefresh && _sales.value is LoadState.Success) {

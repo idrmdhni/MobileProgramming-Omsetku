@@ -103,7 +103,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginBottom="6dp">
+                        android:layout_marginBottom="2dp">
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -276,27 +276,37 @@
                     </LinearLayout>
 
                     <!-- Sales Chart -->
+
+                    <!-- Low Stock Products -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="6dp"
                             android:text="Sales Overview"
+                            android:textColor="@color/color1"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/color1"/>
+                            android:textStyle="bold" />
 
-                        <com.github.mikephil.charting.charts.BarChart
-                            android:id="@+id/barChart"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="180dp"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/backgroundlighttertiary_rounded1"
+                            android:orientation="vertical">
+
+                            <com.github.mikephil.charting.charts.BarChart
+                                android:id="@+id/barChart"
+                                android:layout_width="match_parent"
+                                android:layout_height="180dp"
+                                app:layout_constraintBottom_toBottomOf="parent" />
+                        </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Low Stock Products -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

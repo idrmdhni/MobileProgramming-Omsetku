@@ -12,7 +12,7 @@ data class Sale(
     var saleId: String = "",
     val buyersName: String = "",
     val invoiceNumber: String = "",
-    val totalPurchase: Long = 0,
+    var totalPurchase: Long = 0,
     @ServerTimestamp
     val purchaseDate: Timestamp? = null,
     val month: Int? = null,
