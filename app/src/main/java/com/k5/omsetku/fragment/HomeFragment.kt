@@ -326,7 +326,7 @@ class HomeFragment : Fragment() {
             gridColor = Color.LTGRAY
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
-                    return "${(value / 10000).toInt()}k" // Format menjadi "80k", "100k", dst.
+                    return "${(value / 1000).toInt()}k" // Format menjadi "80k", "100k", dst.
                 }
             }
         }

@@ -56,6 +56,9 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
         saleAdapter = SaleAdapter(this)
         binding.rvSales.adapter = saleAdapter
 
+        saleViewModel.loadSales()
+        saleViewModel.loadAvailableFilterOptions()
+
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.dropdownFilterMonth.setText("", false)
             binding.dropdownFilterYear.setText("", false)
@@ -168,10 +171,6 @@ class SaleFragment : Fragment(), SaleAdapter.OnItemActionListener {
 
         binding.btnAddSales.setOnClickListener {
             LoadFragment.loadChildFragment(parentFragmentManager, R.id.host_fragment, AddSaleFragment())
-        }
-
-        binding.dropdownFilterMonth.setOnClickListener {
-
         }
     }
 
